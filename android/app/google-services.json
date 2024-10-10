@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "681443339119",
+    "project_id": "invitationgen-7eb56",
+    "storage_bucket": "invitationgen-7eb56.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681443339119:android:08d13d9b05474a45f1569a",
+        "android_client_info": {
+          "package_name": "com.invitationgen.invitationgen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "681443339119-8o9aon4issdlkfd1ev0m16cv5as8aprs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOLr-mmuWyrQaGBHWmHRgbDzPOhsuQLdU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "681443339119-8o9aon4issdlkfd1ev0m16cv5as8aprs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "681443339119-t5941pn6db75knk4e56p2f0mllfc05v0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.invitationgen.invitationgen"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681443339119:android:5fd939956689b991f1569a",
+        "android_client_info": {
+          "package_name": "com.invitationgen.invitationgen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "681443339119-8o9aon4issdlkfd1ev0m16cv5as8aprs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOLr-mmuWyrQaGBHWmHRgbDzPOhsuQLdU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "681443339119-8o9aon4issdlkfd1ev0m16cv5as8aprs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "681443339119-t5941pn6db75knk4e56p2f0mllfc05v0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.invitationgen.invitationgen"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
