@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> user) {
         if (!user.hasData) {
@@ -20,13 +20,13 @@ class _HomePageState extends State<HomePage> {
         } else {
           return Scaffold(
             appBar: AppBar(
-              title: const Text("Firebase App"),
+              title: const Text("초대장 생성 앱"),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.logout),
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut().then(
-                          (_) => Navigator.pushNamed(context, "/login"),
+                          (_) => Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false),
                     );
                   },
                 ),
