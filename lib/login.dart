@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       // 사용자가 로그인된 상태이면 메인 화면으로 이동
-      Navigator.pushNamed(context, "/");
+      context.go('/');
     }
   }
 
@@ -42,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
 
         await FirebaseAuth.instance.signInWithCredential(credential);
         // 로그인 성공 후 메인 화면으로 이동
-        Navigator.pushNamed(context, "/");
+        context.go('/');
       }
     } catch (error) {
       debugPrint("Google sign-in failed: $error");
@@ -68,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                 loginButton(),
                 const SizedBox(height: 15),
                 TextButton(
-                  onPressed: () => Navigator.pushNamed(context, '/signup'),
+                  onPressed: () => context.go('/signup'),
                   child: const Text("Sign Up"),
                 ),
                 const SizedBox(height: 15),
@@ -135,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
             await FirebaseAuth.instance.signInWithEmailAndPassword(
                 email: _emailController.text,
                 password: _pwdController.text)
-                .then((_) => Navigator.pushNamed(context, "/"));
+                .then((_) => context.go('/'));
           } on FirebaseAuthException catch (e) {
             if (e.code == 'user-not-found') {
               debugPrint('No user found for that email.');

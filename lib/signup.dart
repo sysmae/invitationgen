@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -95,7 +96,7 @@ class _SignupPageState extends State<SignupPage> {
               email: _emailController.text,
               password: _pwdController.text,
             )
-                .then((_) => Navigator.pushNamed(context, "/"));
+                .then((_) => context.go('/'));
           } on FirebaseAuthException catch (e) {
             if (e.code == 'weak-password') {
               debugPrint('The password provided is too weak.');
