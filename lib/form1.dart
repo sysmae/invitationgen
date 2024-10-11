@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Firebase Auth 임포트
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:invitationgen/firebase_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart'; // intl 패키지 임포트
 
 class Form1Page extends StatefulWidget {
   const Form1Page({super.key});
@@ -12,89 +13,121 @@ class Form1Page extends StatefulWidget {
 
 class _Form1PageState extends State<Form1Page> {
   final _formKey = GlobalKey<FormState>();
-  final FirebaseService _firebaseService = FirebaseService(); // FirebaseService 인스턴스 생성
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth 인스턴스 생성
+  final FirebaseService _firebaseService = FirebaseService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // 청첩장 입력 데이터 변수
-  String _groomName = '신랑 이름'; // 기본값
-  String _groomPhone = '010-0000-0000'; // 기본값
-  String _groomFatherName = '신랑 아버지 이름'; // 기본값
-  String _groomFatherPhone = '010-0000-0000'; // 기본값
-  String _groomMotherName = '신랑 어머니 이름'; // 기본값
-  String _groomMotherPhone = '010-0000-0000'; // 기본값
-  String _brideName = '신부 이름'; // 기본값
-  String _bridePhone = '010-0000-0000'; // 기본값
-  String _brideFatherName = '신부 아버지 이름'; // 기본값
-  String _brideFatherPhone = '010-0000-0000'; // 기본값
-  String _brideMotherName = '신부 어머니 이름'; // 기본값
-  String _brideMotherPhone = '010-0000-0000'; // 기본값
-  DateTime _weddingDateTime = DateTime.now(); // 결혼식 날짜 및 시간
+  // 텍스트 필드 컨트롤러
+  final TextEditingController _groomNameController = TextEditingController(text: '신랑 이름');
+  final TextEditingController _groomPhoneController = TextEditingController(text: '신랑 전화번호');
+  final TextEditingController _groomFatherNameController = TextEditingController(text: '신랑 아버지 이름');
+  final TextEditingController _groomFatherPhoneController = TextEditingController(text: '신랑 아버지 전화번호');
+  final TextEditingController _groomMotherNameController = TextEditingController(text: '신랑 어머니 이름');
+  final TextEditingController _groomMotherPhoneController = TextEditingController(text: '신랑 어머니 전화번호');
+  final TextEditingController _brideNameController = TextEditingController(text: '신부 이름');
+  final TextEditingController _bridePhoneController = TextEditingController(text: '신부 전화번호');
+  final TextEditingController _brideFatherNameController = TextEditingController(text: '신부 아버지 이름');
+  final TextEditingController _brideFatherPhoneController = TextEditingController(text: '신부 아버지 전화번호');
+  final TextEditingController _brideMotherNameController = TextEditingController(text: '신부 어머니 이름');
+  final TextEditingController _brideMotherPhoneController = TextEditingController(text: '신부 어머니 전화번호');
 
-  String? _userId; // 사용자 ID를 저장할 변수
+  // 계좌번호 입력 필드 추가
+  final TextEditingController _groomAccountController = TextEditingController();
+  final TextEditingController _brideAccountController = TextEditingController();
+
+  DateTime _weddingDate = DateTime.now(); // 결혼식 날짜
+  TimeOfDay _weddingTime = TimeOfDay.now(); // 결혼식 시간
+  String? _userId;
 
   @override
   void initState() {
     super.initState();
-    _getUserId(); // 사용자 ID 가져오기
+    _getUserId();
   }
 
-  // 사용자 ID를 가져오는 함수
   Future<void> _getUserId() async {
-    User? user = _auth.currentUser; // 현재 로그인한 사용자 가져오기
+    User? user = _auth.currentUser;
     if (user != null) {
       setState(() {
-        _userId = user.uid; // 사용자 ID 설정
+        _userId = user.uid;
       });
     } else {
-      // 사용자가 로그인하지 않은 경우 처리
-      print('사용자가 로그인하지 않았습니다.');
+      GoRouter.of(context).go('/login');
     }
   }
 
-  // 청첩장 생성 함수
   Future<void> _createInvitation() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
-        await _firebaseService.createInvitation(
-          userId: _userId!, // 사용자 ID 추가
-          templateId: 'templateId', // 템플릿 ID를 여기에 추가
-          groomName: _groomName,
-          groomPhone: _groomPhone,
-          groomFatherName: _groomFatherName,
-          groomFatherPhone: _groomFatherPhone,
-          groomMotherName: _groomMotherName,
-          groomMotherPhone: _groomMotherPhone,
-          brideName: _brideName,
-          bridePhone: _bridePhone,
-          brideFatherName: _brideFatherName,
-          brideFatherPhone: _brideFatherPhone,
-          brideMotherName: _brideMotherName,
-          brideMotherPhone: _brideMotherPhone,
-          weddingDateTime: _weddingDateTime,
-          weddingLocation: '', // 처음에는 공백으로 남겨둡니다.
+        DateTime weddingDateTime = DateTime(
+          _weddingDate.year,
+          _weddingDate.month,
+          _weddingDate.day,
+          _weddingTime.hour,
+          _weddingTime.minute,
         );
 
-        // 성공 시 다음 화면으로 이동
+        await _firebaseService.createInvitation(
+          userId: _userId!,
+          templateId: 'templateId',
+          groomName: _groomNameController.text,
+          groomPhone: _groomPhoneController.text,
+          groomFatherName: _groomFatherNameController.text,
+          groomFatherPhone: _groomFatherPhoneController.text,
+          groomMotherName: _groomMotherNameController.text,
+          groomMotherPhone: _groomMotherPhoneController.text,
+          brideName: _brideNameController.text,
+          bridePhone: _bridePhoneController.text,
+          brideFatherName: _brideFatherNameController.text,
+          brideFatherPhone: _brideFatherPhoneController.text,
+          brideMotherName: _brideMotherNameController.text,
+          brideMotherPhone: _brideMotherPhoneController.text,
+          weddingDateTime: weddingDateTime,
+          weddingLocation: '',
+          additionalAddress: '', // 필요한 경우 추가 주소 필드 추가
+        );
+
+        // Form2Page에 필요한 데이터를 전달
         GoRouter.of(context).go('/form2', extra: {
-          'weddingDateTime': _weddingDateTime,
-          'groomName': _groomName,
-          'groomPhone': _groomPhone,
-          'groomFatherName': _groomFatherName,
-          'groomFatherPhone': _groomFatherPhone,
-          'groomMotherName': _groomMotherName,
-          'groomMotherPhone': _groomMotherPhone,
-          'brideName': _brideName,
-          'bridePhone': _bridePhone,
-          'brideFatherName': _brideFatherName,
-          'brideFatherPhone': _brideFatherPhone,
-          'brideMotherName': _brideMotherName,
-          'brideMotherPhone': _brideMotherPhone,
+          'weddingDateTime': weddingDateTime,
+          'groomName': _groomNameController.text,
+          'groomPhone': _groomPhoneController.text,
+          'groomFatherName': _groomFatherNameController.text,
+          'groomFatherPhone': _groomFatherPhoneController.text,
+          'groomMotherName': _groomMotherNameController.text,
+          'groomMotherPhone': _groomMotherPhoneController.text,
+          'brideName': _brideNameController.text,
+          'bridePhone': _bridePhoneController.text,
+          'brideFatherName': _brideFatherNameController.text,
+          'brideFatherPhone': _brideFatherPhoneController.text,
+          'brideMotherName': _brideMotherNameController.text,
+          'brideMotherPhone': _brideMotherPhoneController.text,
+          'groomAccount': _groomAccountController.text, // 신랑 계좌번호
+          'brideAccount': _brideAccountController.text, // 신부 계좌번호
         });
       } catch (error) {
         print('청첩장 생성 실패: $error');
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _groomNameController.dispose();
+    _groomPhoneController.dispose();
+    _groomFatherNameController.dispose();
+    _groomFatherPhoneController.dispose();
+    _groomMotherNameController.dispose();
+    _groomMotherPhoneController.dispose();
+    _brideNameController.dispose();
+    _bridePhoneController.dispose();
+    _brideFatherNameController.dispose();
+    _brideFatherPhoneController.dispose();
+    _brideMotherNameController.dispose();
+    _brideMotherPhoneController.dispose();
+    _groomAccountController.dispose(); // 계좌번호 컨트롤러 dispose
+    _brideAccountController.dispose(); // 계좌번호 컨트롤러 dispose
+    super.dispose();
   }
 
   @override
@@ -109,105 +142,79 @@ class _Form1PageState extends State<Form1Page> {
             children: [
               // 신랑 정보 입력
               TextFormField(
-                initialValue: _groomName, // 기본값 설정
+                controller: _groomNameController,
                 decoration: const InputDecoration(labelText: '신랑 이름'),
                 validator: (value) => value!.isEmpty ? '이름을 입력하세요' : null,
-                onSaved: (value) => _groomName = value!,
-                keyboardType: TextInputType.name,
               ),
               TextFormField(
-                initialValue: _groomPhone, // 기본값 설정
+                controller: _groomPhoneController,
                 decoration: const InputDecoration(labelText: '신랑 전화번호'),
                 validator: (value) => value!.isEmpty ? '전화번호를 입력하세요' : null,
-                onSaved: (value) => _groomPhone = value!,
-                keyboardType: TextInputType.phone,
               ),
               TextFormField(
-                initialValue: _groomFatherName, // 기본값 설정
+                controller: _groomFatherNameController,
                 decoration: const InputDecoration(labelText: '신랑 아버지 이름'),
                 validator: (value) => value!.isEmpty ? '이름을 입력하세요' : null,
-                onSaved: (value) => _groomFatherName = value!,
-                keyboardType: TextInputType.name,
               ),
               TextFormField(
-                initialValue: _groomFatherPhone, // 기본값 설정
+                controller: _groomFatherPhoneController,
                 decoration: const InputDecoration(labelText: '신랑 아버지 전화번호'),
                 validator: (value) => value!.isEmpty ? '전화번호를 입력하세요' : null,
-                onSaved: (value) => _groomFatherPhone = value!,
-                keyboardType: TextInputType.phone,
               ),
               TextFormField(
-                initialValue: _groomMotherName, // 기본값 설정
+                controller: _groomMotherNameController,
                 decoration: const InputDecoration(labelText: '신랑 어머니 이름'),
                 validator: (value) => value!.isEmpty ? '이름을 입력하세요' : null,
-                onSaved: (value) => _groomMotherName = value!,
-                keyboardType: TextInputType.name,
               ),
               TextFormField(
-                initialValue: _groomMotherPhone, // 기본값 설정
+                controller: _groomMotherPhoneController,
                 decoration: const InputDecoration(labelText: '신랑 어머니 전화번호'),
                 validator: (value) => value!.isEmpty ? '전화번호를 입력하세요' : null,
-                onSaved: (value) => _groomMotherPhone = value!,
-                keyboardType: TextInputType.phone,
+              ),
+              // 신랑 계좌번호 입력
+              TextFormField(
+                controller: _groomAccountController,
+                decoration: const InputDecoration(labelText: '신랑 계좌번호 (선택사항)'),
+                validator: (value) => value!.isEmpty ? null : null, // 선택사항이므로 빈 값 허용
               ),
               // 신부 정보 입력
               TextFormField(
-                initialValue: _brideName, // 기본값 설정
+                controller: _brideNameController,
                 decoration: const InputDecoration(labelText: '신부 이름'),
                 validator: (value) => value!.isEmpty ? '이름을 입력하세요' : null,
-                onSaved: (value) => _brideName = value!,
-                keyboardType: TextInputType.name,
               ),
               TextFormField(
-                initialValue: _bridePhone, // 기본값 설정
+                controller: _bridePhoneController,
                 decoration: const InputDecoration(labelText: '신부 전화번호'),
                 validator: (value) => value!.isEmpty ? '전화번호를 입력하세요' : null,
-                onSaved: (value) => _bridePhone = value!,
-                keyboardType: TextInputType.phone,
               ),
               TextFormField(
-                initialValue: _brideFatherName, // 기본값 설정
+                controller: _brideFatherNameController,
                 decoration: const InputDecoration(labelText: '신부 아버지 이름'),
                 validator: (value) => value!.isEmpty ? '이름을 입력하세요' : null,
-                onSaved: (value) => _brideFatherName = value!,
-                keyboardType: TextInputType.name,
               ),
               TextFormField(
-                initialValue: _brideFatherPhone, // 기본값 설정
+                controller: _brideFatherPhoneController,
                 decoration: const InputDecoration(labelText: '신부 아버지 전화번호'),
                 validator: (value) => value!.isEmpty ? '전화번호를 입력하세요' : null,
-                onSaved: (value) => _brideFatherPhone = value!,
-                keyboardType: TextInputType.phone,
               ),
               TextFormField(
-                initialValue: _brideMotherName, // 기본값 설정
+                controller: _brideMotherNameController,
                 decoration: const InputDecoration(labelText: '신부 어머니 이름'),
                 validator: (value) => value!.isEmpty ? '이름을 입력하세요' : null,
-                onSaved: (value) => _brideMotherName = value!,
-                keyboardType: TextInputType.name,
               ),
               TextFormField(
-                initialValue: _brideMotherPhone, // 기본값 설정
+                controller: _brideMotherPhoneController,
                 decoration: const InputDecoration(labelText: '신부 어머니 전화번호'),
                 validator: (value) => value!.isEmpty ? '전화번호를 입력하세요' : null,
-                onSaved: (value) => _brideMotherPhone = value!,
-                keyboardType: TextInputType.phone,
               ),
-              // 결혼식 날짜 및 시간 입력
-              TextButton(
-                onPressed: () async {
-                  final pickedDateTime = await showDateTimePicker(context);
-                  if (pickedDateTime != null) {
-                    setState(() {
-                      _weddingDateTime = pickedDateTime;
-                    });
-                  }
-                },
-                child: Text(
-                  '결혼식 날짜 및 시간 선택: ${_weddingDateTime.year}-${_weddingDateTime.month}-${_weddingDateTime.day} ${_weddingDateTime.hour}:${_weddingDateTime.minute}',
-                ),
+              // 신부 계좌번호 입력
+              TextFormField(
+                controller: _brideAccountController,
+                decoration: const InputDecoration(labelText: '신부 계좌번호 (선택사항)'),
+                validator: (value) => value!.isEmpty ? null : null, // 선택사항이므로 빈 값 허용
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _createInvitation,
                 child: const Text('다음'),
@@ -217,25 +224,5 @@ class _Form1PageState extends State<Form1Page> {
         ),
       ),
     );
-  }
-
-  Future<DateTime?> showDateTimePicker(BuildContext context) async {
-    final DateTime? date = await showDatePicker(
-      context: context,
-      initialDate: _weddingDateTime,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-
-    if (date != null) {
-      final TimeOfDay? time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay(hour: _weddingDateTime.hour, minute: _weddingDateTime.minute),
-      );
-      if (time != null) {
-        return DateTime(date.year, date.month, date.day, time.hour, time.minute);
-      }
-    }
-    return null;
   }
 }
