@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -91,12 +92,25 @@ class _SignupPageState extends State<SignupPage> {
       onPressed: () async {
         if (_key.currentState!.validate()) {
           try {
-            await FirebaseAuth.instance
+            // FirebaseAuth로 사용자 생성
+            UserCredential userCredential = await FirebaseAuth.instance
                 .createUserWithEmailAndPassword(
               email: _emailController.text,
               password: _pwdController.text,
-            )
-                .then((_) => context.go('/'));
+            );
+
+            // Firestore에 사용자 정보 저장
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userCredential.user?.uid)
+                .set({
+              'email': _emailController.text,
+              'createdAt': FieldValue.serverTimestamp(),
+              // 추가로 필요한 필드를 여기에 저장 가능
+            });
+
+            // 회원가입 후 홈으로 이동
+            context.go('/home'); // 원한다면 다른 경로로 수정 가능
           } on FirebaseAuthException catch (e) {
             if (e.code == 'weak-password') {
               debugPrint('The password provided is too weak.');

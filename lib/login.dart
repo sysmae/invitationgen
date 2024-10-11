@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
@@ -41,7 +42,17 @@ class _LoginPageState extends State<LoginPage> {
           idToken: _auth.idToken,
         );
 
-        await FirebaseAuth.instance.signInWithCredential(credential);
+        // Firebase 인증
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+        // Firestore에 사용자 정보 저장
+        await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
+          'email': userCredential.user?.email,
+          'displayName': userCredential.user?.displayName,
+          'createdAt': FieldValue.serverTimestamp(),
+          // 필요시 추가 필드 작성
+        }, SetOptions(merge: true)); // merge 옵션으로 기존 데이터 유지 가능
+
         // 로그인 성공 후 메인 화면으로 이동
         context.go('/');
       }
