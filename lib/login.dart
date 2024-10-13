@@ -144,10 +144,25 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () async {
         if (_key.currentState!.validate()) {
           try {
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
+            // 이메일과 비밀번호로 로그인
+            UserCredential userCredential = await FirebaseAuth.instance
+                .signInWithEmailAndPassword(
                 email: _emailController.text,
-                password: _pwdController.text)
-                .then((_) => context.go('/'));
+                password: _pwdController.text);
+
+            // Firestore에 사용자 정보 저장 (존재하지 않으면 새로 추가)
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userCredential.user?.uid)
+                .set({
+              'email': userCredential.user?.email,
+              'displayName': userCredential.user?.displayName ?? '',
+              'createdAt': FieldValue.serverTimestamp(),
+              // 필요시 추가 필드 작성
+            }, SetOptions(merge: true));
+
+            // 로그인 성공 후 메인 화면으로 이동
+            context.go('/');
           } on FirebaseAuthException catch (e) {
             if (e.code == 'user-not-found') {
               debugPrint('No user found for that email.');
@@ -168,6 +183,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
 
   ElevatedButton googleSignInButton() {
     return ElevatedButton(

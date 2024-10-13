@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      context.go('/form1'); // 청첩장 생성 폼 페이지로 이동
+                      context.go('/invitations_list'); // 청첩장 생성 폼 페이지로 이동
                     },
                     child: const Text("청첩장 생성하기"),
                   ),

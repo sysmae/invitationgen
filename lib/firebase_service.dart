@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseService {
-  final FirebaseAuth _auth = FirebaseAuth.instance; // FirebaseAuth 인스턴스
-  final FirebaseFirestore _firestore = FirebaseFirestore
-      .instance; // Firestore 인스턴스
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // 현재 로그인된 사용자 ID 가져오기
   Future<String?> getUserId() async {
@@ -12,107 +11,189 @@ class FirebaseService {
     return user?.uid;
   }
 
-  // 초대장 생성
-  Future<String?> createInvitation({
+  // 초대장 초기화
+  Future<String?> initializeInvitation({
     required String userId,
     required String templateId,
-    required String groomName,
-    required String groomPhone,
-    required String groomFatherName,
-    required String groomFatherPhone,
-    required String groomMotherName,
-    required String groomMotherPhone,
-    required String brideName,
-    required String bridePhone,
-    required String brideFatherName,
-    required String brideFatherPhone,
-    required String brideMotherName,
-    required String brideMotherPhone,
-    required DateTime weddingDateTime,
-    required String weddingLocation,
-    String? additionalAddress,
-    String? additionalInstructions, // 추가 안내사항
-    String? groomAccountNumber, // 신랑측 계좌번호
-    String? brideAccountNumber, // 신부측 계좌번호
   }) async {
     try {
-      // 필수 입력값 유효성 검사
-      if (groomName.isEmpty || brideName.isEmpty || weddingLocation.isEmpty) {
-        throw Exception("필수 입력값이 누락되었습니다.");
-      }
-
       // users/{userId}/invitations에 문서 추가
       DocumentReference userRef = _firestore.collection('users').doc(userId);
       CollectionReference invitationsRef = userRef.collection('invitations');
 
-      // Firestore에 저장할 데이터
-      Map<String, dynamic> invitationData = {
+      // 기본 데이터로 초대장 초기화
+      Map<String, dynamic> initialData = {
         'templateId': templateId,
-        'groomName': groomName,
-        'groomPhone': groomPhone,
-        'groomFatherName': groomFatherName,
-        'groomFatherPhone': groomFatherPhone,
-        'groomMotherName': groomMotherName,
-        'groomMotherPhone': groomMotherPhone,
-        'brideName': brideName,
-        'bridePhone': bridePhone,
-        'brideFatherName': brideFatherName,
-        'brideFatherPhone': brideFatherPhone,
-        'brideMotherName': brideMotherName,
-        'brideMotherPhone': brideMotherPhone,
-        'weddingDateTime': weddingDateTime,
-        'weddingLocation': weddingLocation,
-        'additionalAddress': additionalAddress,
-        'additionalInstructions': additionalInstructions, // 추가 안내사항 저장
-        'createdAt': FieldValue.serverTimestamp(), // 문서 생성 시각 저장
+        'groomName': '',
+        'brideName': '',
+        'createdAt': FieldValue.serverTimestamp(),
       };
 
-      // 계좌번호가 제공된 경우 추가
-      if (groomAccountNumber != null) {
-        invitationData['groomAccountNumber'] = groomAccountNumber;
-      }
-      if (brideAccountNumber != null) {
-        invitationData['brideAccountNumber'] = brideAccountNumber;
-      }
-
-      // 초대장 생성 후 Document ID 반환
-      DocumentReference invitationRef = await invitationsRef.add(
-          invitationData);
-      return invitationRef.id; // 초대장 Document ID 반환
+      // 초기화된 초대장 생성 후 Document ID 반환
+      DocumentReference invitationRef = await invitationsRef.add(initialData);
+      return invitationRef.id; // 생성된 초대장의 ID 반환
     } catch (e) {
-      print('Invitation creation failed: $e');
-      return null; // 실패 시 null 반환
+      print('Invitation initialization failed: $e');
+      return null;
     }
   }
 
-// 초대장 업데이트
+  // // 초대장 생성
+  // Future<String?> createInvitation({
+  //   required String userId,
+  //   required String templateId,
+  //   required String groomName,
+  //   required String groomPhone,
+  //   required String groomFatherName,
+  //   required String groomFatherPhone,
+  //   required String groomMotherName,
+  //   required String groomMotherPhone,
+  //   required String brideName,
+  //   required String bridePhone,
+  //   required String brideFatherName,
+  //   required String brideFatherPhone,
+  //   required String brideMotherName,
+  //   required String brideMotherPhone,
+  //   required DateTime weddingDateTime,
+  //   required String weddingLocation,
+  //   String? additionalAddress,
+  //   String? additionalInstructions,
+  //   String? groomAccountNumber,
+  //   String? brideAccountNumber,
+  // }) async {
+  //   try {
+  //     if (groomName.isEmpty || brideName.isEmpty || weddingLocation.isEmpty) {
+  //       throw Exception("필수 입력값이 누락되었습니다.");
+  //     }
+  //
+  //     DocumentReference userRef = _firestore.collection('users').doc(userId);
+  //     CollectionReference invitationsRef = userRef.collection('invitations');
+  //
+  //     Map<String, dynamic> invitationData = {
+  //       'templateId': templateId,
+  //       'groomName': groomName,
+  //       'groomPhone': groomPhone,
+  //       'groomFatherName': groomFatherName,
+  //       'groomFatherPhone': groomFatherPhone,
+  //       'groomMotherName': groomMotherName,
+  //       'groomMotherPhone': groomMotherPhone,
+  //       'brideName': brideName,
+  //       'bridePhone': bridePhone,
+  //       'brideFatherName': brideFatherName,
+  //       'brideFatherPhone': brideFatherPhone,
+  //       'brideMotherName': brideMotherName,
+  //       'brideMotherPhone': brideMotherPhone,
+  //       'weddingDateTime': weddingDateTime,
+  //       'weddingLocation': weddingLocation,
+  //       'additionalAddress': additionalAddress,
+  //       'additionalInstructions': additionalInstructions,
+  //       'createdAt': FieldValue.serverTimestamp(),
+  //     };
+  //
+  //     if (groomAccountNumber != null) {
+  //       invitationData['groomAccountNumber'] = groomAccountNumber;
+  //     }
+  //     if (brideAccountNumber != null) {
+  //       invitationData['brideAccountNumber'] = brideAccountNumber;
+  //     }
+  //
+  //     DocumentReference invitationRef = await invitationsRef.add(invitationData);
+  //     return invitationRef.id;
+  //   } catch (e) {
+  //     print('Invitation creation failed: $e');
+  //     return null;
+  //   }
+  // }
+
+  // 초대장 데이터 가져오기
+  // 초대장 데이터 가져오기
+  Future<Map<String, dynamic>?> getInvitationData(String invitationId) async {
+    try {
+      String? userId = await getUserId();
+      if (userId == null) return null;
+
+      DocumentSnapshot invitationDoc = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('invitations')
+          .doc(invitationId)
+          .get();
+
+      if (invitationDoc.exists) {
+        // 데이터 가져오기
+        Map<String, dynamic> data = invitationDoc.data() as Map<String, dynamic>;
+
+        // Timestamp 필드 null 체크
+        if (data['createdAt'] == null) {
+          data['createdAt'] = null; // 기본값 설정 (null 또는 다른 기본값)
+        } else {
+          data['createdAt'] = (data['createdAt'] as Timestamp).toDate(); // Timestamp를 DateTime으로 변환
+        }
+
+        return data;
+      }
+      return null;
+    } catch (e) {
+      print('Failed to get invitation data: $e');
+      return null;
+    }
+  }
+
+
+  // 초대장 업데이트
+  // 초대장 업데이트
   Future<void> updateInvitation({
-    required String userId,
     required String invitationId,
-    required String? weddingLocation, // null 가능a
-    required String? additionalAddress, // null 가능
+    required String userId,
+    String? templateId,
+    String? groomName,
+    String? groomPhone,
+    String? groomFatherName,
+    String? groomFatherPhone,
+    String? groomMotherName,
+    String? groomMotherPhone,
+    String? brideName,
+    String? bridePhone,
+    String? brideFatherName,
+    String? brideFatherPhone,
+    String? brideMotherName,
+    String? brideMotherPhone,
+    DateTime? weddingDateTime,
+    String? weddingLocation,
+    String? additionalAddress,
+    String? additionalInstructions,
+    String? groomAccountNumber,
+    String? brideAccountNumber,
   }) async {
     try {
-      // 사용자 문서 참조
       DocumentReference userRef = _firestore.collection('users').doc(userId);
-      // 초대장 문서 참조
-      DocumentReference invitationRef = userRef.collection('invitations').doc(
-          invitationId);
+      DocumentReference invitationRef =
+      userRef.collection('invitations').doc(invitationId);
 
-      // 업데이트할 데이터
       Map<String, dynamic> invitationData = {};
 
-      // weddingLocation이 제공된 경우 추가
-      if (weddingLocation != null) {
-        invitationData['weddingLocation'] = weddingLocation;
-      }
+      // 모든 필드 추가
+      if (templateId != null) invitationData['templateId'] = templateId;
+      if (groomName != null) invitationData['groomName'] = groomName;
+      if (groomPhone != null) invitationData['groomPhone'] = groomPhone;
+      if (groomFatherName != null) invitationData['groomFatherName'] = groomFatherName;
+      if (groomFatherPhone != null) invitationData['groomFatherPhone'] = groomFatherPhone;
+      if (groomMotherName != null) invitationData['groomMotherName'] = groomMotherName;
+      if (groomMotherPhone != null) invitationData['groomMotherPhone'] = groomMotherPhone;
+      if (brideName != null) invitationData['brideName'] = brideName;
+      if (bridePhone != null) invitationData['bridePhone'] = bridePhone;
+      if (brideFatherName != null) invitationData['brideFatherName'] = brideFatherName;
+      if (brideFatherPhone != null) invitationData['brideFatherPhone'] = brideFatherPhone;
+      if (brideMotherName != null) invitationData['brideMotherName'] = brideMotherName;
+      if (brideMotherPhone != null) invitationData['brideMotherPhone'] = brideMotherPhone;
+      if (weddingDateTime != null) invitationData['weddingDateTime'] = weddingDateTime;
+      if (weddingLocation != null) invitationData['weddingLocation'] = weddingLocation;
+      if (additionalAddress != null) invitationData['additionalAddress'] = additionalAddress;
+      if (additionalInstructions != null) invitationData['additionalInstructions'] = additionalInstructions;
+      if (groomAccountNumber != null) invitationData['groomAccountNumber'] = groomAccountNumber;
+      if (brideAccountNumber != null) invitationData['brideAccountNumber'] = brideAccountNumber;
 
-      // additionalAddress가 제공된 경우 추가
-      if (additionalAddress != null) {
-        invitationData['additionalAddress'] = additionalAddress;
-      }
-
-      // 업데이트할 데이터가 존재할 경우 초대장 데이터 업데이트
+      // 데이터가 있을 경우에만 업데이트
       if (invitationData.isNotEmpty) {
         await invitationRef.update(invitationData);
       }
@@ -121,40 +202,15 @@ class FirebaseService {
     }
   }
 
-  // 초대장 ID 가져오기 (예시)
-  Future<String?> getInvitationId() async {
-    // 사용자 ID 가져오기
-    String? userId = await getUserId();
-    if (userId == null) return null;
-
-    // 사용자 초대장 목록에서 첫 번째 초대장 ID를 가져옴
-    try {
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
-      if (userDoc.exists) {
-        // 사용자의 초대장 컬렉션에서 첫 번째 문서 가져오기
-        QuerySnapshot invitationsSnapshot = await userDoc.reference.collection('invitations').limit(1).get();
-        if (invitationsSnapshot.docs.isNotEmpty) {
-          return invitationsSnapshot.docs.first.id; // 첫 번째 초대장 ID 반환
-        }
-      }
-    } catch (e) {
-      print('Failed to get invitation ID: $e');
-    }
-    return null; // 실패 시 null 반환
-  }
-
-
   // 초대장 목록 가져오기
   Future<List<DocumentSnapshot>> getInvitations(String userId) async {
     try {
       DocumentReference userRef = _firestore.collection('users').doc(userId);
       QuerySnapshot querySnapshot = await userRef.collection('invitations').get();
-      return querySnapshot.docs; // 초대장 문서 목록 반환
+      return querySnapshot.docs;
     } catch (e) {
       print('Failed to get invitations: $e');
-      return []; // 실패 시 빈 목록 반환
+      return [];
     }
   }
-
 }
-
