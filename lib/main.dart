@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:invitationgen/invitations_list.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
+import 'package:invitationgen/form0.dart';
 import 'package:invitationgen/form1.dart';
 import 'package:invitationgen/form2.dart';
 import 'package:invitationgen/form3.dart';
@@ -53,6 +54,13 @@ class MyApp extends StatelessWidget {
         GoRoute(
           path: '/invitations_list',
           builder: (context, state) => const InvitationsListPage(),
+        ),
+        GoRoute(
+          path: '/form0/:invitationId',
+          builder: (context, state) {
+            final invitationId = state.pathParameters['invitationId'];
+            return Form0Page(invitationId: invitationId);
+          },
         ),
         GoRoute(
           path: '/form1/:invitationId',

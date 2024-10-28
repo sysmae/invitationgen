@@ -46,7 +46,6 @@ class _Form2PageState extends State<Form2Page> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,24 +77,38 @@ class _Form2PageState extends State<Form2Page> {
                 onSaved: (value) => _additionalAddress = value!,
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    String? userId = await _firebaseService.getUserId();
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, // 버튼을 양쪽으로 배치
+                children: [
+                  ElevatedButton(
+                    onPressed: () => context.go('/form1/${widget.invitationId}'), // 이전 페이지로 이동
+                    child: const Text('이전'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        String? userId = await _firebaseService.getUserId();
 
-                    if (userId != null && widget.invitationId != null) {
-                      await _updateWeddingDetails(userId, widget.invitationId!, _weddingLocation, _additionalAddress);
-                      // Form3Page로 invitationId 전달
-                      context.go('/form3/${widget.invitationId}');
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('정보를 가져오는 데 실패했습니다.')),
-                      );
-                    }
-                  }
-                },
-                child: const Text('정보 저장 및 다음'),
+                        if (userId != null && widget.invitationId != null) {
+                          await _updateWeddingDetails(
+                            userId,
+                            widget.invitationId!,
+                            _weddingLocation,
+                            _additionalAddress,
+                          );
+                          // Form3Page로 invitationId 전달
+                          context.go('/form3/${widget.invitationId}');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('정보를 가져오는 데 실패했습니다.')),
+                          );
+                        }
+                      }
+                    },
+                    child: const Text('정보 저장 및 다음'), // 텍스트 버튼
+                  ),
+                ],
               ),
             ],
           ),
@@ -103,6 +116,7 @@ class _Form2PageState extends State<Form2Page> {
       ),
     );
   }
+
 
   void _searchAddress() async {
     Kpostal result = await Navigator.push(

@@ -22,16 +22,24 @@ class _Form1PageState extends State<Form1Page> {
   // Text field controllers
   final TextEditingController _groomNameController = TextEditingController();
   final TextEditingController _groomPhoneController = TextEditingController();
-  final TextEditingController _groomFatherNameController = TextEditingController();
-  final TextEditingController _groomFatherPhoneController = TextEditingController();
-  final TextEditingController _groomMotherNameController = TextEditingController();
-  final TextEditingController _groomMotherPhoneController = TextEditingController();
+  final TextEditingController _groomFatherNameController =
+      TextEditingController();
+  final TextEditingController _groomFatherPhoneController =
+      TextEditingController();
+  final TextEditingController _groomMotherNameController =
+      TextEditingController();
+  final TextEditingController _groomMotherPhoneController =
+      TextEditingController();
   final TextEditingController _brideNameController = TextEditingController();
   final TextEditingController _bridePhoneController = TextEditingController();
-  final TextEditingController _brideFatherNameController = TextEditingController();
-  final TextEditingController _brideFatherPhoneController = TextEditingController();
-  final TextEditingController _brideMotherNameController = TextEditingController();
-  final TextEditingController _brideMotherPhoneController = TextEditingController();
+  final TextEditingController _brideFatherNameController =
+      TextEditingController();
+  final TextEditingController _brideFatherPhoneController =
+      TextEditingController();
+  final TextEditingController _brideMotherNameController =
+      TextEditingController();
+  final TextEditingController _brideMotherPhoneController =
+      TextEditingController();
   final TextEditingController _groomAccountController = TextEditingController();
   final TextEditingController _brideAccountController = TextEditingController();
 
@@ -62,24 +70,36 @@ class _Form1PageState extends State<Form1Page> {
   }
 
   Future<void> _loadInvitationData() async {
-    var invitationData = await _firebaseService.getInvitationData(widget.invitationId!);
+    var invitationData =
+        await _firebaseService.getInvitationData(widget.invitationId!);
     if (invitationData != null) {
       setState(() {
         _groomNameController.text = invitationData['groomName'] ?? '';
         _groomPhoneController.text = invitationData['groomPhone'] ?? '';
-        _groomFatherNameController.text = invitationData['groomFatherName'] ?? '';
-        _groomFatherPhoneController.text = invitationData['groomFatherPhone'] ?? '';
-        _groomMotherNameController.text = invitationData['groomMotherName'] ?? '';
-        _groomMotherPhoneController.text = invitationData['groomMotherPhone'] ?? '';
+        _groomFatherNameController.text =
+            invitationData['groomFatherName'] ?? '';
+        _groomFatherPhoneController.text =
+            invitationData['groomFatherPhone'] ?? '';
+        _groomMotherNameController.text =
+            invitationData['groomMotherName'] ?? '';
+        _groomMotherPhoneController.text =
+            invitationData['groomMotherPhone'] ?? '';
         _brideNameController.text = invitationData['brideName'] ?? '';
         _bridePhoneController.text = invitationData['bridePhone'] ?? '';
-        _brideFatherNameController.text = invitationData['brideFatherName'] ?? '';
-        _brideFatherPhoneController.text = invitationData['brideFatherPhone'] ?? '';
-        _brideMotherNameController.text = invitationData['brideMotherName'] ?? '';
-        _brideMotherPhoneController.text = invitationData['brideMotherPhone'] ?? '';
-        _groomAccountController.text = invitationData['groomAccountNumber'] ?? '';
-        _brideAccountController.text = invitationData['brideAccountNumber'] ?? '';
-        _weddingDate = (invitationData['weddingDateTime'] as Timestamp).toDate();
+        _brideFatherNameController.text =
+            invitationData['brideFatherName'] ?? '';
+        _brideFatherPhoneController.text =
+            invitationData['brideFatherPhone'] ?? '';
+        _brideMotherNameController.text =
+            invitationData['brideMotherName'] ?? '';
+        _brideMotherPhoneController.text =
+            invitationData['brideMotherPhone'] ?? '';
+        _groomAccountController.text =
+            invitationData['groomAccountNumber'] ?? '';
+        _brideAccountController.text =
+            invitationData['brideAccountNumber'] ?? '';
+        _weddingDate =
+            (invitationData['weddingDateTime'] as Timestamp).toDate();
         _weddingTime = TimeOfDay.fromDateTime(_weddingDate);
       });
     } else {
@@ -167,7 +187,6 @@ class _Form1PageState extends State<Form1Page> {
 
         // Navigate to Form2Page
         context.go('/form2/${widget.invitationId}');
-
       } catch (error) {
         print('청첩장 생성/수정 실패: $error');
       }
@@ -196,7 +215,8 @@ class _Form1PageState extends State<Form1Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.invitationId == null ? '청첩장 생성' : '청첩장 수정')),
+      appBar: AppBar(
+          title: Text(widget.invitationId == null ? '청첩장 생성' : '청첩장 수정')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -277,7 +297,8 @@ class _Form1PageState extends State<Form1Page> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('결혼 날짜: ${DateFormat('yyyy-MM-dd').format(_weddingDate)}'),
+                  Text(
+                      '결혼 날짜: ${DateFormat('yyyy-MM-dd').format(_weddingDate)}'),
                   ElevatedButton(
                     onPressed: _selectWeddingDate,
                     child: const Text('날짜 선택'),
@@ -295,10 +316,18 @@ class _Form1PageState extends State<Form1Page> {
                 ],
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveOrUpdateInvitation,
-                child: const Text('다음'),
-              ),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => context.go('/form0/${widget.invitationId}'),
+                    child: const Text('이전'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _saveOrUpdateInvitation,
+                    child: const Text('다음'),
+                  ),
+                ],
+              )
             ],
           ),
         ),

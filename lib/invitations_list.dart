@@ -41,7 +41,7 @@ class _InvitationsListPageState extends State<InvitationsListPage> {
 
       if (newInvitationId != null) {
         // 새 초대장 생성 후 form1 페이지로 이동
-        context.go('/form1/$newInvitationId'); // URL에 초대장 ID 포함
+        context.go('/form0/$newInvitationId'); // URL에 초대장 ID 포함
       } else {
         print('초대장 생성에 실패했습니다.');
       }

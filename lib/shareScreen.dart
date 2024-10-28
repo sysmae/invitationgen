@@ -77,7 +77,7 @@ class ShareScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     // 초대장 수정 페이지로 이동
-                    GoRouter.of(context).go('/form1/${invitationId}'); // 초대장 수정 페이지로 이동
+                    GoRouter.of(context).go('/form0/${invitationId}'); // 초대장 수정 페이지로 이동
                   },
                   child: const Text('초대장 수정하기'),
                 ),

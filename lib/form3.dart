@@ -96,10 +96,18 @@ class _Form3PageState extends State<Form3Page> {
                     }
 
                     // 홈 화면으로 이동
-                    GoRouter.of(context).go('/shareScreen/${widget.invitationId}');
+                    GoRouter.of(context).go('/');
                   }
                 },
                 child: const Text('정보 저장 및 홈으로'),
+              ),
+              const SizedBox(height: 20),
+              // Form2로 이동하는 버튼 추가
+              ElevatedButton(
+                onPressed: () {
+                  context.go('/form2/${widget.invitationId}'); // form2로 이동
+                },
+                child: const Text('이전'),
               ),
             ],
           ),
