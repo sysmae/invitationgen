@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart'; // url_launcher 패키지를 import 합니다.
 import 'firebase_service.dart'; // FirebaseService를 import 합니다.
+import 'package:flutter/services.dart'; // 클립보드 사용을 위한 import입니다.
 
 class ShareScreen extends StatelessWidget {
   final String? invitationId;
@@ -41,7 +43,7 @@ class ShareScreen extends StatelessWidget {
                 Text('추가 안내사항: ${data['additionalInstructions'] ?? '정보 없음'}'),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // 공유할 텍스트 생성
                     final String shareContent =
                         '신랑: ${data['groomName']}\n'
@@ -50,17 +52,34 @@ class ShareScreen extends StatelessWidget {
                         '장소: ${data['location']}\n'
                         '추가 안내사항: ${data['additionalInstructions']}';
 
-                    // 공유 기능 호출
+                    // 클립보드에 링크 추가
+                    final String invitationUrl =
+                        'https://invitationgen-7eb56.firebaseapp.com/invitation/${await FirebaseService().getUserId()}/$invitationId';
+
+                    await Clipboard.setData(ClipboardData(text: invitationUrl));
+
+                    // 토스트 메시지 표시
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('링크가 클립보드에 복사되었습니다.')),
+                    );
                   },
                   child: const Text('초대장 공유하기'),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    // 초대장 목록으로 돌아가기
-                    Navigator.of(context).pop(); // 이전 화면으로 돌아가기
+                    // 초대장 목록으로 이동
+                    GoRouter.of(context).go('/invitations_list'); // invitation_list로 이동
                   },
                   child: const Text('초대장 목록으로 돌아가기'),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    // 초대장 수정 페이지로 이동
+                    GoRouter.of(context).go('/form1/${invitationId}'); // 초대장 수정 페이지로 이동
+                  },
+                  child: const Text('초대장 수정하기'),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
