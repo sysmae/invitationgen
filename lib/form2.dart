@@ -16,6 +16,7 @@ class _Form2PageState extends State<Form2Page> {
   String _weddingLocation = '';
   String _additionalAddress = '';
   final TextEditingController _weddingLocationController = TextEditingController();
+  final TextEditingController _additionalAddressController = TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
 
   @override
@@ -30,6 +31,7 @@ class _Form2PageState extends State<Form2Page> {
   @override
   void dispose() {
     _weddingLocationController.dispose();
+    _additionalAddressController.dispose();
     super.dispose();
   }
 
@@ -40,6 +42,7 @@ class _Form2PageState extends State<Form2Page> {
         _weddingLocation = data['weddingLocation'] ?? '';
         _additionalAddress = data['additionalAddress'] ?? '';
         _weddingLocationController.text = _weddingLocation; // 입력 필드에 기존 데이터 채우기
+        _additionalAddressController.text = _additionalAddress;
       });
     }
   }
@@ -67,10 +70,10 @@ class _Form2PageState extends State<Form2Page> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                controller: _additionalAddressController,
                 decoration: const InputDecoration(
                   labelText: '상세 주소',
                 ),
-                initialValue: _additionalAddress, // 기존 데이터 채우기
                 validator: (value) => value!.isEmpty ? '상세 주소를 입력하세요' : null,
                 onSaved: (value) => _additionalAddress = value!,
               ),

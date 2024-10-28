@@ -2,15 +2,17 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:invitationgen/form3.dart';
 import 'package:invitationgen/invitations_list.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
 import 'package:invitationgen/form1.dart';
 import 'package:invitationgen/form2.dart';
+import 'package:invitationgen/form3.dart';
 import 'package:invitationgen/home.dart';
 import 'package:invitationgen/login.dart';
 import 'package:invitationgen/signup.dart';
+import 'package:invitationgen/my_profile.dart';
+import 'package:invitationgen/shareScreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +47,10 @@ class MyApp extends StatelessWidget {
           builder: (context, state) => const SignupPage(),
         ),
         GoRoute(
+          path: '/my_profile',
+          builder: (context, state) => const MyProfilePage(),
+        ),
+        GoRoute(
           path: '/invitations_list',
           builder: (context, state) => const InvitationsListPage(),
         ),
@@ -67,6 +73,13 @@ class MyApp extends StatelessWidget {
           builder: (context, state) {
             final invitationId = state.pathParameters['invitationId'];
             return Form3Page(invitationId: invitationId);
+          },
+        ),
+        GoRoute(
+          path: '/shareScreen/:invitationId',
+          builder: (context, state) {
+            final invitationId = state.pathParameters['invitationId'];
+            return ShareScreen(invitationId: invitationId);
           },
         ),
       ],

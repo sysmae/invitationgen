@@ -16,40 +16,19 @@ class _HomePageState extends State<HomePage> {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> user) {
-        if (!user.hasData) {
-          return const LoginPage(); // 로그인 페이지로 이동
-        } else {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text("초대장 생성 앱"),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.logout),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut().then(
-                          (_) => context.go('/login'),
-                    );
-                  },
-                ),
-              ],
-            ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Successfully logged in!"),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.go('/invitations_list'); // 청첩장 생성 폼 페이지로 이동
-                    },
-                    child: const Text("청첩장 생성하기"),
-                  ),
-                ],
-              ),
-            ),
-          );
+        // 사용자가 로그인되어 있으면 바로 /invitations_list로 이동
+        if (user.connectionState == ConnectionState.active) {
+          if (user.hasData) {
+            Future.microtask(() => context.go('/invitations_list'));
+          } else {
+            return const LoginPage(); // 로그인 페이지로 이동
+          }
         }
+
+        // 데이터를 기다리는 동안 로딩 표시
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
       },
     );
   }

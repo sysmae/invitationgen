@@ -14,7 +14,33 @@ class Form3Page extends StatefulWidget {
 class _Form3PageState extends State<Form3Page> {
   final _formKey = GlobalKey<FormState>();
   String _additionalInstructions = ''; // 추가 안내사항
+  final TextEditingController _additionalInstructionsController = TextEditingController(); // 컨트롤러 추가
   final FirebaseService _firebaseService = FirebaseService(); // FirebaseService 인스턴스
+
+  @override
+  void initState() {
+    super.initState();
+    // 기존 데이터 로드
+    if (widget.invitationId != null) {
+      _loadExistingData(widget.invitationId!);
+    }
+  }
+
+  @override
+  void dispose() {
+    _additionalInstructionsController.dispose(); // 컨트롤러 해제
+    super.dispose();
+  }
+
+  Future<void> _loadExistingData(String invitationId) async {
+    final data = await _firebaseService.getInvitationData(invitationId);
+    if (data != null) {
+      setState(() {
+        _additionalInstructions = data['additionalInstructions'] ?? ''; // 기존 데이터 가져오기
+        _additionalInstructionsController.text = _additionalInstructions; // 입력 필드에 기존 데이터 채우기
+      });
+    }
+  }
 
   // 정보 업데이트 함수
   Future<void> _updateWeddingDetails(String userId) async {
@@ -48,6 +74,7 @@ class _Form3PageState extends State<Form3Page> {
             children: [
               // 추가 안내사항 입력 필드
               TextFormField(
+                controller: _additionalInstructionsController, // 컨트롤러 설정
                 decoration: const InputDecoration(
                   labelText: '추가 안내사항',
                 ),
@@ -69,7 +96,7 @@ class _Form3PageState extends State<Form3Page> {
                     }
 
                     // 홈 화면으로 이동
-                    GoRouter.of(context).go('/home');
+                    GoRouter.of(context).go('/shareScreen/${widget.invitationId}');
                   }
                 },
                 child: const Text('정보 저장 및 홈으로'),
