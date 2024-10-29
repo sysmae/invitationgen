@@ -104,6 +104,25 @@ class ShareScreen extends StatelessWidget {
                   },
                   child: const Text('웹에서 초대장 보기'),
                 ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    // 초대장 삭제 처리
+                    String? userId = await FirebaseService().getUserId();
+                    if (userId != null) {
+                      await FirebaseService().deleteInvitation(userId, invitationId!);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('초대장이 삭제되었습니다.')),
+                      );
+                      GoRouter.of(context).go('/invitations_list'); // 초대장 목록으로 돌아가기
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('사용자 ID를 가져올 수 없습니다.')),
+                      );
+                    }
+                  },
+                  child: const Text('초대장 삭제하기'),
+                ),
               ],
             ),
           );

@@ -67,7 +67,6 @@ class FirebaseService {
     }
   }
 
-
   // 초대장 업데이트
   Future<void> updateInvitation({
     required String invitationId,
@@ -138,6 +137,20 @@ class FirebaseService {
     } catch (e) {
       print('Failed to get invitations: $e');
       return [];
+    }
+  }
+
+  // 초대장 삭제
+  Future<void> deleteInvitation(String userId, String invitationId) async {
+    try {
+      DocumentReference userRef = _firestore.collection('users').doc(userId);
+      DocumentReference invitationRef = userRef.collection('invitations').doc(invitationId);
+
+      // 초대장 삭제
+      await invitationRef.delete();
+      // print('Invitation deleted successfully.');
+    } catch (e) {
+      // print('Failed to delete invitation: $e');
     }
   }
 }
