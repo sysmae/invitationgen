@@ -19,6 +19,8 @@ class _Form2PageState extends State<Form2Page> {
   String _locationId = '';
   String _locationName = '';
   String _locationUrl = '';
+  String _locationX = '';  // x 좌표
+  String _locationY = '';  // y 좌표
   String _locationPhoneNumber = '';
   final TextEditingController _weddingLocationController = TextEditingController();
   final TextEditingController _additionalAddressController = TextEditingController();
@@ -50,6 +52,8 @@ class _Form2PageState extends State<Form2Page> {
         _additionalAddress = data['additionalAddress'] ?? '';
         _weddingLocationController.text = _weddingLocation; // 입력 필드에 기존 데이터 채우기
         _additionalAddressController.text = _additionalAddress;
+        _locationX = data['locationX'] ?? ''; // 기존 x 좌표 로드
+        _locationY = data['locationY'] ?? ''; // 기존 y 좌표 로드
       });
     }
   }
@@ -138,6 +142,8 @@ class _Form2PageState extends State<Form2Page> {
                           _locationName = item['place_name'];
                           _locationUrl = item['place_url'];
                           _locationPhoneNumber = item['phone'];
+                          _locationX = item['x']; // x 좌표 저장
+                          _locationY = item['y']; // y 좌표 저장
                           _searchResults = [];  // 선택 후 검색 결과 비우기
                         });
                       },
@@ -169,6 +175,8 @@ class _Form2PageState extends State<Form2Page> {
                             _locationUrl,
                             _locationPhoneNumber,
                             _additionalAddress,
+                            _locationX, // 추가된 매개변수
+                            _locationY, // 추가된 매개변수
                           );
                           context.go('/form3/${widget.invitationId}');
                         } else {
@@ -198,6 +206,8 @@ class _Form2PageState extends State<Form2Page> {
       String locationUrl,
       String locationPhoneNumber,
       String additionalAddress,
+      String locationX, // 추가된 매개변수
+      String locationY, // 추가된 매개변수
       ) async {
     // Firebase에 데이터 업데이트
     await _firebaseService.updateInvitation(
@@ -209,6 +219,8 @@ class _Form2PageState extends State<Form2Page> {
       locationUrl: locationUrl,
       locationPhoneNumber: locationPhoneNumber,
       additionalAddress: additionalAddress,
+      locationX: locationX, // 추가된 매개변수
+      locationY: locationY, // 추가된 매개변수
     );
   }
 }
