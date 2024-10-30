@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:go_router/go_router.dart';
 import 'firebase_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert'; // JSON 파싱을 위한 라이브러리
 
 class Form2Page extends StatefulWidget {
   final String? invitationId;
@@ -46,6 +48,7 @@ class _Form2PageState extends State<Form2Page> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,10 +81,13 @@ class _Form2PageState extends State<Form2Page> {
               ),
               const SizedBox(height: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // 버튼을 양쪽으로 배치
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // 버튼을 양쪽으로 배치
                 children: [
                   ElevatedButton(
-                    onPressed: () => context.go('/form1/${widget.invitationId}'), // 이전 페이지로 이동
+                    onPressed: () =>
+                        context.go('/form1/${widget.invitationId}'),
+                    // 이전 페이지로 이동
                     child: const Text('이전'),
                   ),
                   ElevatedButton(
@@ -131,15 +137,49 @@ class _Form2PageState extends State<Form2Page> {
       });
     }
   }
+  Future<void> _updateWeddingDetails(
+      String userId,
+      String invitationId,
+      String location,
+      String additionalAddress
+      ) async {
+    final String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json?query=${location}";
 
-  Future<void> _updateWeddingDetails(String userId, String invitationId, String location, String additionalAddress) async {
     try {
-      await _firebaseService.updateInvitation(
-        userId: userId,
-        invitationId: invitationId,
-        weddingLocation: location,
-        additionalAddress: additionalAddress,
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'KakaoAK cc3b6f0b87a18890a26bfa187316dc73',  // 'KakaoAK '와 REST API 키를 함께 사용
+        },
       );
+
+      if (response.statusCode == 200) {
+        // print('응답 본문: ${response.body}');
+
+        final responseData = jsonDecode(response.body);
+        String locationX = responseData['documents'][0]['x'];
+        String locationY = responseData['documents'][0]['y'];
+
+        // print("locationX"+locationX+"locationY"+locationY);
+
+        // Firebase에 데이터를 업데이트
+        await _firebaseService.updateInvitation(
+          userId: userId,
+          invitationId: invitationId,
+          weddingLocation: location, // 검색된 location 사용
+          additionalAddress: additionalAddress,
+          locationX: locationX,
+          locationY: locationY,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('정보가 성공적으로 저장되었습니다.')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('카카오 API 오류: ${response.statusCode}')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('정보 업데이트 실패: $e')),

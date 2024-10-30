@@ -86,6 +86,8 @@ class FirebaseService {
     String? brideMotherPhone,
     DateTime? weddingDateTime,
     String? weddingLocation,
+    String? locationX,
+    String? locationY,
     String? additionalAddress,
     String? additionalInstructions,
     String? groomAccountNumber,
@@ -114,6 +116,8 @@ class FirebaseService {
       if (brideMotherPhone != null) invitationData['brideMotherPhone'] = brideMotherPhone;
       if (weddingDateTime != null) invitationData['weddingDateTime'] = weddingDateTime;
       if (weddingLocation != null) invitationData['weddingLocation'] = weddingLocation;
+      if (locationX !=null) invitationData['locationX'] = locationX;
+      if (locationY !=null) invitationData['locationY'] = locationY;
       if (additionalAddress != null) invitationData['additionalAddress'] = additionalAddress;
       if (additionalInstructions != null) invitationData['additionalInstructions'] = additionalInstructions;
       if (groomAccountNumber != null) invitationData['groomAccountNumber'] = groomAccountNumber;
