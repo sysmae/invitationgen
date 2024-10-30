@@ -67,7 +67,7 @@ class FirebaseService {
     }
   }
 
-  // 초대장 업데이트
+// 초대장 업데이트
   Future<void> updateInvitation({
     required String invitationId,
     required String userId,
@@ -88,6 +88,10 @@ class FirebaseService {
     String? weddingLocation,
     String? locationX,
     String? locationY,
+    String? locationId,              // 추가된 부분
+    String? locationName,            // 추가된 부분
+    String? locationUrl,             // 추가된 부분
+    String? locationPhoneNumber,     // 추가된 부분
     String? additionalAddress,
     String? additionalInstructions,
     String? groomAccountNumber,
@@ -116,8 +120,12 @@ class FirebaseService {
       if (brideMotherPhone != null) invitationData['brideMotherPhone'] = brideMotherPhone;
       if (weddingDateTime != null) invitationData['weddingDateTime'] = weddingDateTime;
       if (weddingLocation != null) invitationData['weddingLocation'] = weddingLocation;
-      if (locationX !=null) invitationData['locationX'] = locationX;
-      if (locationY !=null) invitationData['locationY'] = locationY;
+      if (locationX != null) invitationData['locationX'] = locationX;
+      if (locationY != null) invitationData['locationY'] = locationY;
+      if (locationId != null) invitationData['locationId'] = locationId;               // 추가된 부분
+      if (locationName != null) invitationData['locationName'] = locationName;         // 추가된 부분
+      if (locationUrl != null) invitationData['locationUrl'] = locationUrl;            // 추가된 부분
+      if (locationPhoneNumber != null) invitationData['locationPhoneNumber'] = locationPhoneNumber;  // 추가된 부분
       if (additionalAddress != null) invitationData['additionalAddress'] = additionalAddress;
       if (additionalInstructions != null) invitationData['additionalInstructions'] = additionalInstructions;
       if (groomAccountNumber != null) invitationData['groomAccountNumber'] = groomAccountNumber;

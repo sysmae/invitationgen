@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kpostal/kpostal.dart';
 import 'package:go_router/go_router.dart';
 import 'firebase_service.dart';
 import 'package:http/http.dart' as http;
@@ -17,9 +16,15 @@ class _Form2PageState extends State<Form2Page> {
   final _formKey = GlobalKey<FormState>();
   String _weddingLocation = '';
   String _additionalAddress = '';
+  String _locationId = '';
+  String _locationName = '';
+  String _locationUrl = '';
+  String _locationPhoneNumber = '';
   final TextEditingController _weddingLocationController = TextEditingController();
   final TextEditingController _additionalAddressController = TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
+  List<dynamic> _searchResults = [];  // 검색 결과를 저장할 리스트
+  bool _isSearching = false;  // 검색 중 상태를 나타내는 플래그
 
   @override
   void initState() {
@@ -49,6 +54,42 @@ class _Form2PageState extends State<Form2Page> {
     }
   }
 
+  // 주소 검색 함수
+  Future<void> _searchAddress(String query) async {
+    if (query.isEmpty) return;
+
+    setState(() {
+      _isSearching = true; // 검색 중 상태로 설정
+    });
+
+    final String apiUrl =
+        "https://dapi.kakao.com/v2/local/search/keyword.json?query=${Uri.encodeComponent(query)}";
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'KakaoAK cc3b6f0b87a18890a26bfa187316dc73', // 'KakaoAK '와 REST API 키를 함께 사용
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        setState(() {
+          _searchResults = responseData['documents'];  // 검색 결과 리스트 업데이트
+        });
+      } else {
+        print('카카오 API 오류: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('검색 실패: $e');
+    } finally {
+      setState(() {
+        _isSearching = false; // 검색 완료 후 상태 업데이트
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,9 +107,8 @@ class _Form2PageState extends State<Form2Page> {
                   labelText: '결혼식 장소 (주소)',
                   suffixIcon: Icon(Icons.search),
                 ),
-                readOnly: true,
                 validator: (value) => value!.isEmpty ? '장소를 선택하세요' : null,
-                onTap: _searchAddress,
+                onChanged: _searchAddress, // 사용자가 입력할 때마다 검색
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -80,14 +120,37 @@ class _Form2PageState extends State<Form2Page> {
                 onSaved: (value) => _additionalAddress = value!,
               ),
               const SizedBox(height: 20),
+              if (_isSearching) const CircularProgressIndicator(),  // 검색 중일 때 로딩 아이콘 표시
+              if (_searchResults.isNotEmpty)
+                ListView.builder(
+                  shrinkWrap: true,  // 리스트뷰가 다른 위젯과 겹치지 않도록 설정
+                  itemCount: _searchResults.length,
+                  itemBuilder: (context, index) {
+                    var item = _searchResults[index];
+                    return ListTile(
+                      title: Text("${item['place_name']} (${item['address_name']})"),
+                      subtitle: Text("전화번호: ${item['phone']}"),
+                      onTap: () {
+                        setState(() {
+                          _weddingLocation = item['address_name'];
+                          _weddingLocationController.text = _weddingLocation;
+                          _locationId = item['id'];
+                          _locationName = item['place_name'];
+                          _locationUrl = item['place_url'];
+                          _locationPhoneNumber = item['phone'];
+                          _searchResults = [];  // 선택 후 검색 결과 비우기
+                        });
+                      },
+                    );
+                  },
+                ),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                // 버튼을 양쪽으로 배치
                 children: [
                   ElevatedButton(
                     onPressed: () =>
                         context.go('/form1/${widget.invitationId}'),
-                    // 이전 페이지로 이동
                     child: const Text('이전'),
                   ),
                   ElevatedButton(
@@ -101,9 +164,12 @@ class _Form2PageState extends State<Form2Page> {
                             userId,
                             widget.invitationId!,
                             _weddingLocation,
+                            _locationId,
+                            _locationName,
+                            _locationUrl,
+                            _locationPhoneNumber,
                             _additionalAddress,
                           );
-                          // Form3Page로 invitationId 전달
                           context.go('/form3/${widget.invitationId}');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -112,7 +178,7 @@ class _Form2PageState extends State<Form2Page> {
                         }
                       }
                     },
-                    child: const Text('정보 저장 및 다음'), // 텍스트 버튼
+                    child: const Text('정보 저장 및 다음'),
                   ),
                 ],
               ),
@@ -123,67 +189,26 @@ class _Form2PageState extends State<Form2Page> {
     );
   }
 
-
-  void _searchAddress() async {
-    Kpostal result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => KpostalView()),
-    );
-
-    if (result != null) {
-      setState(() {
-        _weddingLocation = result.address;
-        _weddingLocationController.text = _weddingLocation;
-      });
-    }
-  }
   Future<void> _updateWeddingDetails(
       String userId,
       String invitationId,
       String location,
-      String additionalAddress
+      String locationId,
+      String locationName,
+      String locationUrl,
+      String locationPhoneNumber,
+      String additionalAddress,
       ) async {
-    final String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json?query=${location}";
-
-    try {
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'KakaoAK cc3b6f0b87a18890a26bfa187316dc73',  // 'KakaoAK '와 REST API 키를 함께 사용
-        },
-      );
-
-      if (response.statusCode == 200) {
-        // print('응답 본문: ${response.body}');
-
-        final responseData = jsonDecode(response.body);
-        String locationX = responseData['documents'][0]['x'];
-        String locationY = responseData['documents'][0]['y'];
-
-        // print("locationX"+locationX+"locationY"+locationY);
-
-        // Firebase에 데이터를 업데이트
-        await _firebaseService.updateInvitation(
-          userId: userId,
-          invitationId: invitationId,
-          weddingLocation: location, // 검색된 location 사용
-          additionalAddress: additionalAddress,
-          locationX: locationX,
-          locationY: locationY,
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('정보가 성공적으로 저장되었습니다.')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('카카오 API 오류: ${response.statusCode}')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('정보 업데이트 실패: $e')),
-      );
-    }
+    // Firebase에 데이터 업데이트
+    await _firebaseService.updateInvitation(
+      invitationId: invitationId,
+      userId: userId,
+      weddingLocation: location,
+      locationId: locationId,
+      locationName: locationName,
+      locationUrl: locationUrl,
+      locationPhoneNumber: locationPhoneNumber,
+      additionalAddress: additionalAddress,
+    );
   }
 }
