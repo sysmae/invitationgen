@@ -92,6 +92,8 @@ class FirebaseService {
     String? locationName,            // 추가된 부분
     String? locationUrl,             // 추가된 부분
     String? locationPhoneNumber,     // 추가된 부분
+    String? kakaoRoadUrl,
+    String? naverRoadUrl,
     String? additionalAddress,
     String? additionalInstructions,
     String? groomAccountNumber,
@@ -126,6 +128,8 @@ class FirebaseService {
       if (locationName != null) invitationData['locationName'] = locationName;         // 추가된 부분
       if (locationUrl != null) invitationData['locationUrl'] = locationUrl;            // 추가된 부분
       if (locationPhoneNumber != null) invitationData['locationPhoneNumber'] = locationPhoneNumber;  // 추가된 부분
+      if (kakaoRoadUrl != null) invitationData['kakaoRoadUrl'] = kakaoRoadUrl;
+      if (naverRoadUrl != null) invitationData['naverRoadUrl'] = naverRoadUrl;
       if (additionalAddress != null) invitationData['additionalAddress'] = additionalAddress;
       if (additionalInstructions != null) invitationData['additionalInstructions'] = additionalInstructions;
       if (groomAccountNumber != null) invitationData['groomAccountNumber'] = groomAccountNumber;

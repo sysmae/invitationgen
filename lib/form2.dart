@@ -22,6 +22,8 @@ class _Form2PageState extends State<Form2Page> {
   String _locationX = '';  // x 좌표
   String _locationY = '';  // y 좌표
   String _locationPhoneNumber = '';
+  String _kakaoRoadUrl ='';
+  String _naverRoadUrl ='';
   final TextEditingController _weddingLocationController = TextEditingController();
   final TextEditingController _additionalAddressController = TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
@@ -48,15 +50,25 @@ class _Form2PageState extends State<Form2Page> {
     final data = await _firebaseService.getInvitationData(invitationId);
     if (data != null) {
       setState(() {
+        // 모든 필드 초기화
         _weddingLocation = data['weddingLocation'] ?? '';
         _additionalAddress = data['additionalAddress'] ?? '';
-        _weddingLocationController.text = _weddingLocation; // 입력 필드에 기존 데이터 채우기
+        _locationId = data['locationId'] ?? '';
+        _locationName = data['locationName'] ?? '';
+        _locationUrl = data['locationUrl'] ?? '';
+        _locationPhoneNumber = data['locationPhoneNumber'] ?? '';
+        _locationX = data['locationX'] ?? '';
+        _locationY = data['locationY'] ?? '';
+        _kakaoRoadUrl = data['kakaoRoadUrl'] ?? '';
+        _naverRoadUrl = data['naverRoadUrl'] ?? '';
+
+        // 입력 필드에 기존 데이터 채우기
+        _weddingLocationController.text = _weddingLocation;
         _additionalAddressController.text = _additionalAddress;
-        _locationX = data['locationX'] ?? ''; // 기존 x 좌표 로드
-        _locationY = data['locationY'] ?? ''; // 기존 y 좌표 로드
       });
     }
   }
+
 
   // 주소 검색 함수
   Future<void> _searchAddress(String query) async {
@@ -92,6 +104,7 @@ class _Form2PageState extends State<Form2Page> {
         _isSearching = false; // 검색 완료 후 상태 업데이트
       });
     }
+
   }
 
   @override
@@ -144,6 +157,8 @@ class _Form2PageState extends State<Form2Page> {
                           _locationPhoneNumber = item['phone'];
                           _locationX = item['x']; // x 좌표 저장
                           _locationY = item['y']; // y 좌표 저장
+                          _kakaoRoadUrl = 'https://map.kakao.com/link/to/'+item['id'];
+                          _naverRoadUrl = 'https://map.naver.com/v5/search/${Uri.encodeComponent(item['place_name'] + ' ' + item['address_name'])}';
                           _searchResults = [];  // 선택 후 검색 결과 비우기
                         });
                       },
@@ -177,6 +192,8 @@ class _Form2PageState extends State<Form2Page> {
                             _additionalAddress,
                             _locationX, // 추가된 매개변수
                             _locationY, // 추가된 매개변수
+                            _kakaoRoadUrl,
+                            _naverRoadUrl
                           );
                           context.go('/form3/${widget.invitationId}');
                         } else {
@@ -208,6 +225,8 @@ class _Form2PageState extends State<Form2Page> {
       String additionalAddress,
       String locationX, // 추가된 매개변수
       String locationY, // 추가된 매개변수
+      String kakaoRoadUrl,
+      String naverRoadUrl
       ) async {
     // Firebase에 데이터 업데이트
     await _firebaseService.updateInvitation(
@@ -221,6 +240,8 @@ class _Form2PageState extends State<Form2Page> {
       additionalAddress: additionalAddress,
       locationX: locationX, // 추가된 매개변수
       locationY: locationY, // 추가된 매개변수
+      kakaoRoadUrl:kakaoRoadUrl,
+      naverRoadUrl:naverRoadUrl
     );
   }
 }
