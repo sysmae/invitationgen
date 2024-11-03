@@ -65,51 +65,81 @@ class _Form3PageState extends State<Form3Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('추가 안내사항 입력')),
+      appBar: AppBar(
+        title: Image.asset('asset/temporary_logo.png'),
+        backgroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
-            children: [
-              // 추가 안내사항 입력 필드
-              TextFormField(
-                controller: _additionalInstructionsController, // 컨트롤러 설정
-                decoration: const InputDecoration(
-                  labelText: '추가 안내사항',
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      '추가 사항 입력',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
+                      ),
+                    )
+                  ],
                 ),
-                maxLines: 3, // 여러 줄 입력 가능
-                validator: (value) => value!.isEmpty ? '안내사항을 입력하세요' : null,
-                onSaved: (value) => _additionalInstructions = value!,
-              ),
-              const SizedBox(height: 20),
-              // 정보 저장 및 홈으로 이동 버튼
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    String? userId = await _firebaseService.getUserId();
+                // 추가 안내사항 입력 필드
+                TextFormField(
+                  controller: _additionalInstructionsController, // 컨트롤러 설정
+                  decoration: const InputDecoration(
+                    labelText: '추가 안내사항',
+                  ),
+                  maxLines: 3, // 여러 줄 입력 가능
+                  validator: (value) {return null;},
+                  onSaved: (value) => _additionalInstructions = value ?? '',
+                ),
+                const SizedBox(height: 20),
+                // 정보 저장 및 홈으로 이동 버튼
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Form2로 이동하는 버튼 추가
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xffffff6d)
+                      ),
+                      onPressed: () {
+                        context.go('/form2/${widget.invitationId}'); // form2로 이동
+                      },
+                      child: const Text('이전'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xffffff6d)
+                      ),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          String? userId = await _firebaseService.getUserId();
 
-                    // 입력된 데이터 처리 (예: Firebase에 저장)
-                    if (userId != null && widget.invitationId != null) {
-                      await _updateWeddingDetails(userId);
-                    }
+                          // 입력된 데이터 처리 (예: Firebase에 저장)
+                          if (userId != null && widget.invitationId != null) {
+                            await _updateWeddingDetails(userId);
+                          }
 
-                    // 홈 화면으로 이동
-                    GoRouter.of(context).go('/');
-                  }
-                },
-                child: const Text('정보 저장 및 홈으로'),
-              ),
-              const SizedBox(height: 20),
-              // Form2로 이동하는 버튼 추가
-              ElevatedButton(
-                onPressed: () {
-                  context.go('/form2/${widget.invitationId}'); // form2로 이동
-                },
-                child: const Text('이전'),
-              ),
-            ],
+                          // 홈 화면으로 이동
+                          GoRouter.of(context).go('/');
+                        }
+                      },
+                      child: const Text('정보 저장 및 홈으로'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

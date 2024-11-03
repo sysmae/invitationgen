@@ -46,52 +46,84 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('내 정보'),
+        title: Image.asset(
+          'asset/temporary_logo.png'
+        ),
+        backgroundColor: Colors.white,
       ),
       body: _user == null
           ? const Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 40,
+           const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
-                _user!.displayName != null
-                    ? _user!.displayName![0].toUpperCase()
-                    : 'U',
-                style: const TextStyle(fontSize: 40),
+                '사용자 정보',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            Text(
-              _user!.displayName ?? '이름 정보 없음',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        const SizedBox(height: 80),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 40,
+                  child: Text(
+                    _user!.displayName != null
+                        ? _user!.displayName![0].toUpperCase()
+                        : 'U',
+                    style: const TextStyle(fontSize: 40),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  _user!.displayName ?? '이름 정보 없음',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _user!.email ?? '이메일 정보 없음',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xffffff6d)
+                  ),
+                  onPressed: () async {
+                    // 이름 업데이트를 위한 다이얼로그 띄우기
+                    final newDisplayName = await _showUpdateNameDialog();
+                    if (newDisplayName != null && newDisplayName.isNotEmpty) {
+                      _updateDisplayName(newDisplayName);
+                    }
+                  },
+                  child: const Text('이름 수정'),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xffffff6d)
+                  ),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    context.go('/'); // 로그아웃 후 보관함으로 이동
+                  },
+                  child: const Text('로그아웃'),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              _user!.email ?? '이메일 정보 없음',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () async {
-                // 이름 업데이트를 위한 다이얼로그 띄우기
-                final newDisplayName = await _showUpdateNameDialog();
-                if (newDisplayName != null && newDisplayName.isNotEmpty) {
-                  _updateDisplayName(newDisplayName);
-                }
-              },
-              child: const Text('이름 수정'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                context.go('/'); // 로그아웃 후 보관함으로 이동
-              },
-              child: const Text('로그아웃'),
-            ),
+          ]
+        )
           ],
         ),
       ),

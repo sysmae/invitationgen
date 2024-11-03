@@ -64,26 +64,29 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Firebase App")),
       body: Container(
         padding: const EdgeInsets.all(15),
         child: Center(
           child: Form(
             key: _key,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
+                Image.asset(
+                    'asset/login_screen.png',
+                  height: 300,
+                ),
+                const SizedBox(height:10),
                 emailInput(),
                 const SizedBox(height: 15),
                 passwordInput(),
                 const SizedBox(height: 15),
                 loginButton(),
-                const SizedBox(height: 15),
+                const SizedBox(height: 0),
                 TextButton(
                   onPressed: () => context.go('/signup'),
                   child: const Text("Sign Up"),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 30),
                 googleSignInButton(),
               ],
             ),
@@ -141,6 +144,9 @@ class _LoginPageState extends State<LoginPage> {
 
   ElevatedButton loginButton() {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Color(0xffffff6d)
+      ),
       onPressed: () async {
         if (_key.currentState!.validate()) {
           try {
@@ -173,11 +179,14 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       child: Container(
+        width: 2000,
         padding: const EdgeInsets.all(15),
+        alignment: Alignment.center,
         child: const Text(
           "Login",
           style: TextStyle(
             fontSize: 18,
+            color: Colors.black
           ),
         ),
       ),
@@ -188,13 +197,27 @@ class _LoginPageState extends State<LoginPage> {
   ElevatedButton googleSignInButton() {
     return ElevatedButton(
       onPressed: () => signInWithGoogle(context),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white
+      ),
       child: Container(
+        width: 2000,
         padding: const EdgeInsets.all(15),
-        child: const Text(
-          "Login with Google",
-          style: TextStyle(
-            fontSize: 18,
-          ),
+        child: Row(
+          children: [
+            Image.asset(
+              'asset/google_logo.png',
+              height: 25
+            ),
+            const Spacer(),
+            const Text(
+              "Login with Google",
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            const Spacer()
+          ],
         ),
       ),
     );

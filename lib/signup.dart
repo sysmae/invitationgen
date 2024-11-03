@@ -18,7 +18,6 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Firebase App")),
       body: Container(
         padding: const EdgeInsets.all(15),
         child: Center(
@@ -27,12 +26,20 @@ class _SignupPageState extends State<SignupPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Image.asset(
+                    'asset/temporary_logo.png',
+                  height: 200
+                ),
                 emailInput(),
                 const SizedBox(height: 15),
                 passwordInput(),
                 const SizedBox(height: 15),
                 submitButton(),
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
+                TextButton(
+                  onPressed: () => context.go('/login'),
+                  child: const Text("Back to login screen"),
+                ),
               ],
             ),
           ),
@@ -89,6 +96,9 @@ class _SignupPageState extends State<SignupPage> {
 
   ElevatedButton submitButton() {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Color(0xffffff6d)
+      ),
       onPressed: () async {
         if (_key.currentState!.validate()) {
           try {
@@ -123,7 +133,9 @@ class _SignupPageState extends State<SignupPage> {
         }
       },
       child: Container(
+        width: 2000,
         padding: const EdgeInsets.all(15),
+        alignment: Alignment.center,
         child: const Text(
           "Sign Up",
           style: TextStyle(

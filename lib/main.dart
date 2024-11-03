@@ -98,6 +98,7 @@ class MyApp extends StatelessWidget {
       title: '초대장 생성 앱',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white
       ),
     );
   }

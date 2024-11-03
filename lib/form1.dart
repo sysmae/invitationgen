@@ -7,8 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Form1Page extends StatefulWidget {
   final String? invitationId;
+  final int initialPage;
 
-  const Form1Page({Key? key, this.invitationId}) : super(key: key);
+  const Form1Page({Key? key, this.invitationId, this.initialPage = 0}) : super(key: key);
 
   @override
   _Form1PageState createState() => _Form1PageState();
@@ -61,6 +62,7 @@ class _Form1PageState extends State<Form1Page> {
     } else {
       _setDefaultData(); // 기본 데이터 설정 함수 호출
     }
+    _currentPage = widget.initialPage;
   }
 
   Future<void> _getUserId() async {
@@ -246,7 +248,12 @@ class _Form1PageState extends State<Form1Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.invitationId == null ? '청첩장 생성' : '청첩장 수정')),
+        title: Image.asset(
+            'asset/temporary_logo.png'
+        ),
+        backgroundColor: Colors.white,
+      ),
+
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
@@ -257,6 +264,17 @@ class _Form1PageState extends State<Form1Page> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal:16.0, vertical: 8.0),
+                    child: Text(
+                      '신랑 정보 입력',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
+                      )
+                    )
+                  ),
                   TextFormField(
                     controller: _groomNameController,
                     decoration: const InputDecoration(labelText: '신랑 이름'),
@@ -292,11 +310,29 @@ class _Form1PageState extends State<Form1Page> {
                     decoration: const InputDecoration(labelText: '신랑 계좌번호'),
                     validator: (value) => value!.isEmpty ? '계좌번호를 입력하세요.' : null,
                   ),
-                  ElevatedButton(
-                      onPressed: (){
-                        _nextPage();
-                      },
-                      child: Text('신부 정보 입력')
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xffffff6d)
+                          ),
+                          onPressed: (){
+                            context.go('/form0/${widget.invitationId}');
+                          },
+                          child: const Text('템플릿 설정')
+                      ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xffffff6d)
+                          ),
+                          onPressed: (){
+                            _nextPage();
+                          },
+                          child: const Text('신부 정보 입력')
+                      ),
+                    ],
                   )
                 ],
               )
@@ -308,6 +344,17 @@ class _Form1PageState extends State<Form1Page> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  const Padding(
+                      padding: EdgeInsets.symmetric(horizontal:16.0, vertical: 8.0),
+                      child: Text(
+                          '신부 정보 입력',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black
+                          )
+                      )
+                  ),
                   TextFormField(
                     controller: _brideNameController,
                     decoration: const InputDecoration(labelText: '신부 이름'),
@@ -343,13 +390,21 @@ class _Form1PageState extends State<Form1Page> {
                     decoration: const InputDecoration(labelText: '신부 계좌번호'),
                     validator: (value) => value!.isEmpty ? '계좌번호를 입력하세요.' : null,
                   ),
+                  SizedBox(height: 10),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xffffff6d)
+                          ),
                           onPressed: (){_prevPage();},
                           child: Text('신랑 정보 입력')
                       ),
                       ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xffffff6d)
+                          ),
                           onPressed: (){_nextPage();},
                           child: Text('날짜 및 장소 입력')
                       ),
@@ -365,26 +420,45 @@ class _Form1PageState extends State<Form1Page> {
               padding: EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  const Padding(
+                      padding: EdgeInsets.symmetric(horizontal:16.0, vertical: 8.0),
+                      child: Text(
+                          '날짜 및 시간 선택',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black
+                          )
+                      )
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Wedding Date: ${DateFormat('yyyy-MM-dd').format(_weddingDate)}'),
-                      ElevatedButton(onPressed: _selectWeddingDate, child: const Text('Pick Date')),
+                      ElevatedButton(onPressed: _selectWeddingDate, child: const Text('날짜 선택')),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Wedding Time: ${_weddingTime.format(context)}'),
-                      ElevatedButton(onPressed: _selectWeddingTime, child: const Text('Pick Time')),
+                      Text('결혼 시간: ${_weddingTime.format(context)}'),
+                      ElevatedButton(onPressed: _selectWeddingTime, child: const Text('시간 선택')),
                     ],
                   ),
+                  SizedBox(height: 10),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xffffff6d)
+                          ),
                           onPressed: _prevPage,
                           child: const Text('신부 정보 입력')),
                       ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xffffff6d)
+                          ),
                           onPressed: _saveOrUpdateInvitation,
                           child: const Text('다음 단계로')
                       ),

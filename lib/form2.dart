@@ -110,13 +110,29 @@ class _Form2PageState extends State<Form2Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('결혼식 장소 입력')),
+      appBar: AppBar(
+          title: Image.asset('asset/temporary_logo.png'),
+        backgroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    '결혼 장소 설정',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black
+                    ),
+                  )
+                ],
+              ),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _weddingLocationController,
@@ -170,11 +186,17 @@ class _Form2PageState extends State<Form2Page> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xffffff6d)
+                    ),
                     onPressed: () =>
-                        context.go('/form1/${widget.invitationId}'),
+                        context.go('/form1/${widget.invitationId}?initialPage=2'),
                     child: const Text('이전'),
                   ),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xffffff6d)
+                    ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();

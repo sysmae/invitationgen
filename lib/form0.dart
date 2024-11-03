@@ -41,26 +41,67 @@ class _Form0PageState extends State<Form0Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('템플릿 선택')),
+      appBar: AppBar(
+        title: Image.asset('asset/temporary_logo.png'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: (){
+              if(widget.invitationId != null){
+                context.go('/shareScreen/${widget.invitationId}');
+              } else{
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('초대 ID가 없습니다.')),
+                );
+              }
+            },
+          )
+        ],
+      ),
       body: Column(
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
+          const Align(
+            alignment: Alignment.centerLeft, // Left-aligns the text
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0), // Optional padding for alignment with other content
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '템플릿 설정',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           Expanded(
             child: PageView(
               controller: PageController(initialPage: _currentPageIndex),
-              onPageChanged: (index) {
+              /* onPageChanged: (index) {
                 setState(() {
                   _selectedTemplateId = (index + 1).toString(); // 페이지 변경 시 템플릿 ID 업데이트
                 });
-              },
+              }, 템플릿 선택 시에만 회색으로 선택 표시하게 만듬 */
               children: [
-                _buildTemplateCard('1', '템플릿 1'),
-                _buildTemplateCard('2', '템플릿 2'),
-                _buildTemplateCard('3', '템플릿 3'),
+                _buildTemplateCard('1', '템플릿 1', 'asset/template1.png'),
+                _buildTemplateCard('2', '템플릿 2', 'asset/template2.png'),
+                _buildTemplateCard('3', '템플릿 3', 'asset/template3.png'),
               ],
             ),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xffffff6d)
+            ),
             onPressed: () async {
               if (_selectedTemplateId.isNotEmpty) {
                 String? userId = await _firebaseService.getUserId();
@@ -87,35 +128,39 @@ class _Form0PageState extends State<Form0Page> {
     );
   }
 
-  Widget _buildTemplateCard(String templateId, String title) {
+  Widget _buildTemplateCard(String templateId, String title, String imagepath) {
     return GestureDetector(
       onTap: () {
         setState(() {
           _selectedTemplateId = templateId; // 선택한 템플릿 ID 저장
           // 템플릿 ID 선택 시 페이지 변경
-          _navigateToNextPage(templateId);
         });
       },
       child: Card(
-        color: _selectedTemplateId == templateId ? Colors.blue : Colors.white,
-        child: Center(
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: _selectedTemplateId == templateId ? Colors.white : Colors.black,
+        color: _selectedTemplateId == templateId ? Colors.grey : Colors.white,
+        child: Column(
+          children: [
+            Expanded(
+              child: Image.asset(
+                imagepath,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-        ),
+            SizedBox(height: 8), // Space between image and text
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              )
+            ),
+          ],
+        )
       ),
     );
   }
 
-  void _navigateToNextPage(String templateId) {
-    // 선택한 템플릿 ID에 따라 다음 페이지로 이동
-    context.go('/form1/${widget.invitationId}');
-  }
 
   Future<void> _updateTemplateId(String userId, String invitationId, String templateId) async {
     try {
