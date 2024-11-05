@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:go_router/go_router.dart'; // GoRouter 사용 시 필요
+import 'package:go_router/go_router.dart';
 
 class MyProfilePage extends StatefulWidget {
   const MyProfilePage({Key? key}) : super(key: key);
@@ -46,9 +46,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(
-          'asset/temporary_logo.png'
-        ),
+        title: Image.asset('asset/temporary_logo.png'),
         backgroundColor: Colors.white,
       ),
       body: _user == null
@@ -58,7 +56,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-           const Padding(
+            const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
                 '사용자 정보',
@@ -69,83 +67,63 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 ),
               ),
             ),
-        const SizedBox(height: 80),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(
+            const SizedBox(height: 80),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 40,
-                  child: Text(
-                    _user!.displayName != null
-                        ? _user!.displayName![0].toUpperCase()
-                        : 'U',
-                    style: const TextStyle(fontSize: 40),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  _user!.displayName ?? '이름 정보 없음',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  _user!.email ?? '이메일 정보 없음',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xffffff6d)
-                  ),
-                  onPressed: () async {
-                    // 이름 업데이트를 위한 다이얼로그 띄우기
-                    final newDisplayName = await _showUpdateNameDialog();
-                    if (newDisplayName != null && newDisplayName.isNotEmpty) {
-                      _updateDisplayName(newDisplayName);
-                    }
-                  },
-                  child: const Text('이름 수정'),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffffff6d)
-                  ),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    context.go('/'); // 로그아웃 후 보관함으로 이동
-                  },
-                  child: const Text('로그아웃'),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      child: Text(
+                        _user?.displayName?.isNotEmpty == true
+                            ? _user!.displayName![0].toUpperCase()
+                            : 'U', // Default letter
+                        style: const TextStyle(fontSize: 40),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      _user?.displayName ?? '이름 정보 없음',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _user?.email ?? '이메일 정보 없음',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffffff6d),
+                      ),
+                      onPressed: () async {
+                        // 이름 업데이트를 위한 다이얼로그 띄우기
+                        final newDisplayName = await _showUpdateNameDialog();
+                        if (newDisplayName != null && newDisplayName.isNotEmpty) {
+                          _updateDisplayName(newDisplayName);
+                        }
+                      },
+                      child: const Text('이름 수정'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffffff6d),
+                      ),
+                      onPressed: () async {
+                        await FirebaseAuth.instance.signOut();
+                        context.go('/'); // 로그아웃 후 보관함으로 이동
+                      },
+                      child: const Text('로그아웃'),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ]
-        )
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // "내 정보" 탭의 인덱스를 가리킴
-        onTap: (index) {
-          if (index == 0) {
-            context.go('/invitations_list'); // 초대장 목록으로 이동
-          } else if (index == 1) {
-            context.go('/my_profile'); // 내 정보 페이지로 이동
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.archive),
-            label: '보관함',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '내 정보',
-          ),
-        ],
       ),
     );
   }

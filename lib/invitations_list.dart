@@ -13,7 +13,6 @@ class InvitationsListPage extends StatefulWidget {
 class _InvitationsListPageState extends State<InvitationsListPage> {
   final FirebaseService _firebaseService = FirebaseService();
   List _invitations = [];
-  int _selectedIndex = 0; // "보관함"이 기본 선택된 탭으로 설정
 
   @override
   void initState() {
@@ -22,11 +21,10 @@ class _InvitationsListPageState extends State<InvitationsListPage> {
   }
 
   // Firebase에서 초대장 목록 불러오기
-  Future _loadInvitations() async {
+  Future<void> _loadInvitations() async {
     String? userId = await _firebaseService.getUserId(); // 사용자 ID 가져오기
     if (userId != null) {
-      List invitations = await _firebaseService.getInvitations(
-          userId); // 초대장 목록 불러오기
+      List invitations = await _firebaseService.getInvitations(userId); // 초대장 목록 불러오기
       setState(() {
         _invitations = invitations; // 초대장 목록 상태에 저장
       });
@@ -38,29 +36,14 @@ class _InvitationsListPageState extends State<InvitationsListPage> {
     String? userId = await _firebaseService.getUserId(); // 사용자 ID 가져오기
     if (userId != null) {
       // 새 초대장 생성
-      String? newInvitationId = await _firebaseService.initializeInvitation(
-          userId: userId);
+      String? newInvitationId = await _firebaseService.initializeInvitation(userId: userId);
 
       if (newInvitationId != null) {
-        // 새 초대장 생성 후 form1 페이지로 이동
+        // 새 초대장 생성 후 form0 페이지로 이동
         context.go('/form0/$newInvitationId'); // URL에 초대장 ID 포함
       } else {
         print('초대장 생성에 실패했습니다.');
       }
-    }
-  }
-
-  // 하단 네비게이션 탭 선택 핸들러
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // 선택된 인덱스 업데이트
-    });
-
-    // 각 탭에 맞는 페이지로 이동
-    if (index == 0) {
-      context.go('/invitations_list'); // 보관함 페이지로 이동
-    } else if (index == 1) {
-      context.go('/my_profile'); // 내 정보 페이지로 이동
     }
   }
 
@@ -69,9 +52,7 @@ class _InvitationsListPageState extends State<InvitationsListPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Image.asset(
-            'asset/temporary_logo.png'
-        ),
+        title: Image.asset('asset/temporary_logo.png'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -79,17 +60,16 @@ class _InvitationsListPageState extends State<InvitationsListPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            // Adjust padding as needed
-            child: Text(
-              '보관함',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                '보관함',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
-          ),
             Expanded(
               child: ListView.builder(
                 itemCount: _invitations.length + 1,
@@ -111,8 +91,7 @@ class _InvitationsListPageState extends State<InvitationsListPage> {
 
                     return Card(
                       child: ListTile(
-                        title: Text(
-                            '${data['groomName']} ♥ ${data['brideName']}'),
+                        title: Text('${data['groomName']} ♥ ${data['brideName']}'),
                         subtitle: Text('날짜: $weddingDateTime'),
                         onTap: () => context.go('/shareScreen/${invitation.id}'),
                       ),
@@ -120,12 +99,20 @@ class _InvitationsListPageState extends State<InvitationsListPage> {
                   }
                 },
               ),
-            ),],
-        )
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        currentIndex: 0, // Adjust this depending on the current page
+        onTap: (index) {
+          // Each tab should navigate to the appropriate page
+          if (index == 0) {
+            context.go('/invitations_list'); // Go to invitations list
+          } else {
+            context.go('/my_profile'); // Go to my profile
+          }
+        },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.archive),

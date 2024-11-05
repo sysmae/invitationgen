@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         ),
         GoRoute(
           path: '/my_profile',
-          builder: (context, state) => const MyProfilePage(),
+          builder: (context, state) =>  MyProfilePage(),
         ),
         GoRoute(
           path: '/invitations_list',

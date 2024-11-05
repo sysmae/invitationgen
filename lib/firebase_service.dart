@@ -35,10 +35,10 @@ class FirebaseService {
   }
 
   // 초대장 데이터 가져오기
-  Future<Map<String, dynamic>?> getInvitationData(String invitationId) async {
+  Future<Map<String, dynamic>> getInvitationData(String invitationId) async {
     try {
       String? userId = await getUserId();
-      if (userId == null) return null;
+      if (userId == null) return {}; // Return an empty map if the user ID is null
 
       DocumentSnapshot invitationDoc = await _firestore
           .collection('users')
@@ -58,14 +58,15 @@ class FirebaseService {
           data['createdAt'] = (data['createdAt'] as Timestamp).toDate(); // Timestamp를 DateTime으로 변환
         }
 
-        return data;
+        return data; // Return the retrieved data
       }
-      return null;
+      return {}; // Return an empty map if the document does not exist
     } catch (e) {
       print('Failed to get invitation data: $e');
-      return null;
+      return {}; // Return an empty map on error
     }
   }
+
 
 // 초대장 업데이트
   Future<void> updateInvitation({
@@ -107,6 +108,17 @@ class FirebaseService {
       Map<String, dynamic> invitationData = {};
 
       // 모든 필드 추가
+      invitationData['userId'] = userId;
+      invitationData['invitationId'] =invitationId;
+      if (invitationData['userId'] != null && invitationData['invitationId'] != null) {
+        // Construct the full URL
+        String shareLink = 'https://invitationgen-7eb56.firebaseapp.com/invitation/${invitationData['userId']}/${invitationData['invitationId']}';
+
+        // Encode the entire URL
+        invitationData['shareLink'] = Uri.encodeFull(shareLink);
+      } else {
+        throw 'userId 또는 invitationId가 없습니다.';
+      }
       if (templateId != null) invitationData['templateId'] = templateId;
       if (groomName != null) invitationData['groomName'] = groomName;
       if (groomPhone != null) invitationData['groomPhone'] = groomPhone;
