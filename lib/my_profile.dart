@@ -52,78 +52,103 @@ class _MyProfilePageState extends State<MyProfilePage> {
       body: _user == null
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(
-                '사용자 정보',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text(
+                      '사용자 정보',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 80),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 40,
+                            child: Text(
+                              _user?.displayName?.isNotEmpty == true
+                                  ? _user!.displayName![0].toUpperCase()
+                                  : 'U', // Default letter
+                              style: const TextStyle(fontSize: 40),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            _user?.displayName ?? '이름 정보 없음',
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            _user?.email ?? '이메일 정보 없음',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 30),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xffffff6d),
+                            ),
+                            onPressed: () async {
+                              // 이름 업데이트를 위한 다이얼로그 띄우기
+                              final newDisplayName =
+                                  await _showUpdateNameDialog();
+                              if (newDisplayName != null &&
+                                  newDisplayName.isNotEmpty) {
+                                _updateDisplayName(newDisplayName);
+                              }
+                            },
+                            child: const Text('이름 수정'),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xffffff6d),
+                            ),
+                            onPressed: () async {
+                              await FirebaseAuth.instance.signOut();
+                              context.go('/'); // 로그아웃 후 보관함으로 이동
+                            },
+                            child: const Text('로그아웃'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 80),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      child: Text(
-                        _user?.displayName?.isNotEmpty == true
-                            ? _user!.displayName![0].toUpperCase()
-                            : 'U', // Default letter
-                        style: const TextStyle(fontSize: 40),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      _user?.displayName ?? '이름 정보 없음',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      _user?.email ?? '이메일 정보 없음',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 30),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffffff6d),
-                      ),
-                      onPressed: () async {
-                        // 이름 업데이트를 위한 다이얼로그 띄우기
-                        final newDisplayName = await _showUpdateNameDialog();
-                        if (newDisplayName != null && newDisplayName.isNotEmpty) {
-                          _updateDisplayName(newDisplayName);
-                        }
-                      },
-                      child: const Text('이름 수정'),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffffff6d),
-                      ),
-                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        context.go('/'); // 로그아웃 후 보관함으로 이동
-                      },
-                      child: const Text('로그아웃'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0, // Adjust this depending on the current page
+        onTap: (index) {
+          // Each tab should navigate to the appropriate page
+          if (index == 0) {
+            context.go('/invitations_list'); // Go to invitations list
+          } else {
+            context.go('/my_profile'); // Go to my profile
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.archive),
+            label: '보관함',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: '내 정보',
+          ),
+        ],
       ),
     );
   }

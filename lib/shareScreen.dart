@@ -63,7 +63,7 @@ class _ShareScreenState extends State<ShareScreen> {
           final weddingDateTime = data['weddingDateTime'];
           String weddingDateTimeString = weddingDateTime != null
               ? DateFormat("yyyy년 MM월 dd일 EEEE a hh시 mm분", "ko")
-              .format(weddingDateTime.toDate())
+                  .format(weddingDateTime.toDate())
               : '정보 없음';
 
           return Padding(
@@ -83,18 +83,35 @@ class _ShareScreenState extends State<ShareScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text('신랑: ${data['groomName'] ?? '정보 없음'}'),
-                Text('신부: ${data['brideName'] ?? '정보 없음'}'),
-                Text('결혼 날짜: $weddingDateTimeString'),
-                Text('장소: ${data['locationName'] ?? '정보 없음'}'),
-                Text('추가 안내사항: ${data['additionalInstructions'] ?? '정보 없음'}'),
+                Container(
+                  child: (data['templateId'] == '1')
+                      ? Image.asset('asset/template1.png')
+                      : (data['templateId'] == '2')
+                          ? Image.asset('asset/template2.png')
+                          : (data['templateId'] == '3')
+                              ? Image.asset('asset/template3.png')
+                              : const Center(
+                                  child: Text(
+                                    '잘못된 템플렛 ID 입니다.',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                ),
                 const SizedBox(height: 20),
-                _buildCopyLinkButton(context),
-                _buildKakaoShareButton(context, data, weddingDateTimeString),
-                _buildEditInvitationButton(context),
-                _buildViewInvitationButton(context),
-                _buildBackToListButton(context),
-                _buildDeleteInvitationButton(context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildCopyLinkButton(context),
+                    _buildKakaoShareButton(
+                        context, data, weddingDateTimeString),
+                    _buildEditInvitationButton(context),
+                    _buildViewInvitationButton(context),
+                    _buildDeleteInvitationButton(context),
+                  ],
+                )
               ],
             ),
           );
@@ -104,7 +121,7 @@ class _ShareScreenState extends State<ShareScreen> {
   }
 
   Widget _buildCopyLinkButton(BuildContext context) {
-    return ElevatedButton(
+    return IconButton(
       onPressed: () async {
         try {
           final invitationUrl = await _generateInvitationUrl();
@@ -118,19 +135,21 @@ class _ShareScreenState extends State<ShareScreen> {
           );
         }
       },
-      child: const Text('초대장 링크 복사하기'),
+      icon: const Icon(Icons.copy),
     );
   }
 
-  Widget _buildKakaoShareButton(
-      BuildContext context, Map<String, dynamic> data, String weddingDateTimeString) {
-    return ElevatedButton(
+  Widget _buildKakaoShareButton(BuildContext context, Map<String, dynamic> data,
+      String weddingDateTimeString) {
+    return IconButton(
       onPressed: () async {
-        bool isKakaoTalkSharingAvailable = await ShareClient.instance.isKakaoTalkSharingAvailable();
+        bool isKakaoTalkSharingAvailable =
+            await ShareClient.instance.isKakaoTalkSharingAvailable();
         int templateId = 113904;
         if (isKakaoTalkSharingAvailable) {
           try {
-            Uri uri = await ShareClient.instance.shareCustom(templateId: templateId);
+            Uri uri =
+                await ShareClient.instance.shareCustom(templateId: templateId);
             await ShareClient.instance.launchKakaoTalk(uri);
           } catch (error) {
             print('카카오톡 공유 실패: $error');
@@ -153,19 +172,19 @@ class _ShareScreenState extends State<ShareScreen> {
           }
         }
       },
-      child: const Text('Share via KakaoTalk'),
+      icon: const Icon(Icons.share),
     );
   }
 
   Widget _buildEditInvitationButton(BuildContext context) {
-    return ElevatedButton(
+    return IconButton(
       onPressed: () => GoRouter.of(context).go('/form0/${widget.invitationId}'),
-      child: const Text('초대장 수정하기'),
+      icon: const Icon(Icons.edit),
     );
   }
 
   Widget _buildViewInvitationButton(BuildContext context) {
-    return ElevatedButton(
+    return IconButton(
       onPressed: () async {
         try {
           final invitationUrl = await _generateInvitationUrl();
@@ -180,24 +199,25 @@ class _ShareScreenState extends State<ShareScreen> {
           );
         }
       },
-      child: const Text('웹에서 초대장 보기'),
+      icon: const Icon(Icons.language),
     );
   }
 
   Widget _buildBackToListButton(BuildContext context) {
-    return ElevatedButton(
+    return IconButton(
       onPressed: () => GoRouter.of(context).go('/invitations_list'),
-      child: const Text('초대장 목록으로 돌아가기'),
+      icon: const Icon(Icons.arrow_back),
     );
   }
 
   Widget _buildDeleteInvitationButton(BuildContext context) {
-    return ElevatedButton(
+    return IconButton(
       onPressed: () async {
         try {
           String? userId = await FirebaseService().getUserId();
           if (userId != null) {
-            await FirebaseService().deleteInvitation(userId, widget.invitationId!);
+            await FirebaseService()
+                .deleteInvitation(userId, widget.invitationId!);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('초대장이 삭제되었습니다.')),
             );
@@ -209,7 +229,7 @@ class _ShareScreenState extends State<ShareScreen> {
           );
         }
       },
-      child: const Text('초대장 삭제하기'),
+      icon: const Icon(Icons.delete),
     );
   }
 }

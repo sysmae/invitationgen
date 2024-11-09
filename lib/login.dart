@@ -43,10 +43,14 @@ class _LoginPageState extends State<LoginPage> {
         );
 
         // Firebase 인증
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
 
         // Firestore에 사용자 정보 저장
-        await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user?.uid)
+            .set({
           'email': userCredential.user?.email,
           'displayName': userCredential.user?.displayName,
           'createdAt': FieldValue.serverTimestamp(),
@@ -64,31 +68,34 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(15),
-        child: Center(
-          child: Form(
-            key: _key,
-            child: Column(
-              children: [
-                Image.asset(
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          child: Center(
+            child: Form(
+              key: _key,
+              child: Column(
+                children: [
+                  Image.asset(
                     'asset/login_screen.png',
-                  height: 300,
-                ),
-                const SizedBox(height:10),
-                emailInput(),
-                const SizedBox(height: 15),
-                passwordInput(),
-                const SizedBox(height: 15),
-                loginButton(),
-                const SizedBox(height: 0),
-                TextButton(
-                  onPressed: () => context.go('/signup'),
-                  child: const Text("Sign Up"),
-                ),
-                const SizedBox(height: 30),
-                googleSignInButton(),
-              ],
+                    height: 300,
+                  ),
+                  const SizedBox(height: 10),
+                  emailInput(),
+                  const SizedBox(height: 15),
+                  passwordInput(),
+                  const SizedBox(height: 15),
+                  loginButton(),
+                  const SizedBox(height: 0),
+                  TextButton(
+                    onPressed: () => context.go('/signup'),
+                    child: const Text("Sign Up"),
+                  ),
+                  const SizedBox(height: 30),
+                  googleSignInButton(),
+                ],
+              ),
             ),
           ),
         ),
@@ -144,17 +151,15 @@ class _LoginPageState extends State<LoginPage> {
 
   ElevatedButton loginButton() {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xffffff6d)
-      ),
+      style: ElevatedButton.styleFrom(backgroundColor: Color(0xffffff6d)),
       onPressed: () async {
         if (_key.currentState!.validate()) {
           try {
             // 이메일과 비밀번호로 로그인
             UserCredential userCredential = await FirebaseAuth.instance
                 .signInWithEmailAndPassword(
-                email: _emailController.text,
-                password: _pwdController.text);
+                    email: _emailController.text,
+                    password: _pwdController.text);
 
             // Firestore에 사용자 정보 저장 (존재하지 않으면 새로 추가)
             await FirebaseFirestore.instance
@@ -184,31 +189,22 @@ class _LoginPageState extends State<LoginPage> {
         alignment: Alignment.center,
         child: const Text(
           "Login",
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.black
-          ),
+          style: TextStyle(fontSize: 18, color: Colors.black),
         ),
       ),
     );
   }
 
-
   ElevatedButton googleSignInButton() {
     return ElevatedButton(
       onPressed: () => signInWithGoogle(context),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white
-      ),
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
       child: Container(
         width: 2000,
         padding: const EdgeInsets.all(15),
         child: Row(
           children: [
-            Image.asset(
-              'asset/google_logo.png',
-              height: 25
-            ),
+            Image.asset('asset/google_logo.png', height: 25),
             const Spacer(),
             const Text(
               "Login with Google",

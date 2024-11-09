@@ -27,7 +27,7 @@ class _Form0PageState extends State<Form0Page> {
 
   Future<void> _loadExistingData(String invitationId) async {
     final data = await _firebaseService.getInvitationData(invitationId);
-    if (data != null) {
+    if (data != true) {
       setState(() {
         _selectedTemplateId = data['templateId'] ?? '';
         // 페이지 인덱스를 선택한 템플릿 ID에 맞게 설정
@@ -48,12 +48,44 @@ class _Form0PageState extends State<Form0Page> {
         actions: [
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: (){
-              if(widget.invitationId != null){
-                context.go('/shareScreen/${widget.invitationId}');
-              } else{
+            onPressed: () async {
+              if (widget.invitationId != null) {
+                if (!['1', '2', '3'].contains(_selectedTemplateId)) {
+                  try {
+                    String? userId = await _firebaseService.getUserId();
+                    if (userId != null) {
+                      await _firebaseService.deleteInvitation(
+                          userId, widget.invitationId!);
+                      context.go('/invitations_list');
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('사용자 ID를 가져올 수 없습니다.')),
+                    );
+                  }
+                } else {
+                  final data = await _firebaseService
+                      .getInvitationData(widget.invitationId!);
+                  if (data['groomName'] == null || data['brideName'] == null) {
+                    try {
+                      String? userId = await _firebaseService.getUserId();
+                      if (userId != null) {
+                        await _firebaseService.deleteInvitation(
+                            userId, widget.invitationId!);
+                        context.go('/invitations_list');
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('사용자 ID를 가져올 수 없습니다.')),
+                      );
+                    }
+                  } else {
+                    context.go('/shareScreen/${widget.invitationId}');
+                  }
+                }
+              } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('초대 ID가 없습니다.')),
+                  const SnackBar(content: Text('초대 ID가 없습니다.')),
                 );
               }
             },
@@ -66,7 +98,9 @@ class _Form0PageState extends State<Form0Page> {
           const Align(
             alignment: Alignment.centerLeft, // Left-aligns the text
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0), // Optional padding for alignment with other content
+              padding: EdgeInsets.symmetric(
+                  horizontal:
+                      16.0), // Optional padding for alignment with other content
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -100,13 +134,14 @@ class _Form0PageState extends State<Form0Page> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xffffff6d)
+              backgroundColor: const Color(0xffffff6d),
             ),
             onPressed: () async {
               if (_selectedTemplateId.isNotEmpty) {
                 String? userId = await _firebaseService.getUserId();
                 if (userId != null && widget.invitationId != null) {
-                  await _updateTemplateId(userId, widget.invitationId!, _selectedTemplateId);
+                  await _updateTemplateId(
+                      userId, widget.invitationId!, _selectedTemplateId);
                   // Form1Page로 invitationId 전달
                   context.go('/form1/${widget.invitationId}');
                 } else {
@@ -137,32 +172,29 @@ class _Form0PageState extends State<Form0Page> {
         });
       },
       child: Card(
-        color: _selectedTemplateId == templateId ? Colors.grey : Colors.white,
-        child: Column(
-          children: [
-            Expanded(
-              child: Image.asset(
-                imagepath,
-                fit: BoxFit.cover,
+          color: _selectedTemplateId == templateId ? Colors.grey : Colors.white,
+          child: Column(
+            children: [
+              Expanded(
+                child: Image.asset(
+                  imagepath,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            SizedBox(height: 8), // Space between image and text
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              )
-            ),
-          ],
-        )
-      ),
+              SizedBox(height: 8), // Space between image and text
+              Text(title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  )),
+            ],
+          )),
     );
   }
 
-
-  Future<void> _updateTemplateId(String userId, String invitationId, String templateId) async {
+  Future<void> _updateTemplateId(
+      String userId, String invitationId, String templateId) async {
     try {
       await _firebaseService.updateInvitation(
         userId: userId,

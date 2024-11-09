@@ -19,16 +19,18 @@ class _Form2PageState extends State<Form2Page> {
   String _locationId = '';
   String _locationName = '';
   String _locationUrl = '';
-  String _locationX = '';  // x 좌표
-  String _locationY = '';  // y 좌표
+  String _locationX = ''; // x 좌표
+  String _locationY = ''; // y 좌표
   String _locationPhoneNumber = '';
-  String _kakaoRoadUrl ='';
-  String _naverRoadUrl ='';
-  final TextEditingController _weddingLocationController = TextEditingController();
-  final TextEditingController _additionalAddressController = TextEditingController();
+  String _kakaoRoadUrl = '';
+  String _naverRoadUrl = '';
+  final TextEditingController _weddingLocationController =
+      TextEditingController();
+  final TextEditingController _additionalAddressController =
+      TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
-  List<dynamic> _searchResults = [];  // 검색 결과를 저장할 리스트
-  bool _isSearching = false;  // 검색 중 상태를 나타내는 플래그
+  List<dynamic> _searchResults = []; // 검색 결과를 저장할 리스트
+  bool _isSearching = false; // 검색 중 상태를 나타내는 플래그
 
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _Form2PageState extends State<Form2Page> {
 
   Future<void> _loadExistingData(String invitationId) async {
     final data = await _firebaseService.getInvitationData(invitationId);
-    if (data != null) {
+    if (data != true) {
       setState(() {
         // 모든 필드 초기화
         _weddingLocation = data['weddingLocation'] ?? '';
@@ -69,7 +71,6 @@ class _Form2PageState extends State<Form2Page> {
     }
   }
 
-
   // 주소 검색 함수
   Future<void> _searchAddress(String query) async {
     if (query.isEmpty) return;
@@ -85,14 +86,15 @@ class _Form2PageState extends State<Form2Page> {
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'KakaoAK cc3b6f0b87a18890a26bfa187316dc73', // 'KakaoAK '와 REST API 키를 함께 사용
+          'Authorization':
+              'KakaoAK cc3b6f0b87a18890a26bfa187316dc73', // 'KakaoAK '와 REST API 키를 함께 사용
         },
       );
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         setState(() {
-          _searchResults = responseData['documents'];  // 검색 결과 리스트 업데이트
+          _searchResults = responseData['documents']; // 검색 결과 리스트 업데이트
         });
       } else {
         print('카카오 API 오류: ${response.statusCode}');
@@ -104,14 +106,13 @@ class _Form2PageState extends State<Form2Page> {
         _isSearching = false; // 검색 완료 후 상태 업데이트
       });
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Image.asset('asset/temporary_logo.png'),
+        title: Image.asset('asset/temporary_logo.png'),
         backgroundColor: Colors.white,
       ),
       body: Padding(
@@ -126,10 +127,9 @@ class _Form2PageState extends State<Form2Page> {
                   const Text(
                     '결혼 장소 설정',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
                   )
                 ],
               ),
@@ -153,15 +153,17 @@ class _Form2PageState extends State<Form2Page> {
                 onSaved: (value) => _additionalAddress = value!,
               ),
               const SizedBox(height: 20),
-              if (_isSearching) const CircularProgressIndicator(),  // 검색 중일 때 로딩 아이콘 표시
+              if (_isSearching)
+                const CircularProgressIndicator(), // 검색 중일 때 로딩 아이콘 표시
               if (_searchResults.isNotEmpty)
                 ListView.builder(
-                  shrinkWrap: true,  // 리스트뷰가 다른 위젯과 겹치지 않도록 설정
+                  shrinkWrap: true, // 리스트뷰가 다른 위젯과 겹치지 않도록 설정
                   itemCount: _searchResults.length,
                   itemBuilder: (context, index) {
                     var item = _searchResults[index];
                     return ListTile(
-                      title: Text("${item['place_name']} (${item['address_name']})"),
+                      title: Text(
+                          "${item['place_name']} (${item['address_name']})"),
                       subtitle: Text("전화번호: ${item['phone']}"),
                       onTap: () {
                         setState(() {
@@ -173,9 +175,11 @@ class _Form2PageState extends State<Form2Page> {
                           _locationPhoneNumber = item['phone'];
                           _locationX = item['x']; // x 좌표 저장
                           _locationY = item['y']; // y 좌표 저장
-                          _kakaoRoadUrl = 'https://map.kakao.com/link/to/'+item['id'];
-                          _naverRoadUrl = 'https://map.naver.com/v5/search/${Uri.encodeComponent(item['place_name'] + ' ' + item['address_name'])}';
-                          _searchResults = [];  // 선택 후 검색 결과 비우기
+                          _kakaoRoadUrl =
+                              'https://map.kakao.com/link/to/' + item['id'];
+                          _naverRoadUrl =
+                              'https://map.naver.com/v5/search/${Uri.encodeComponent(item['place_name'] + ' ' + item['address_name'])}';
+                          _searchResults = []; // 선택 후 검색 결과 비우기
                         });
                       },
                     );
@@ -187,16 +191,15 @@ class _Form2PageState extends State<Form2Page> {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffffff6d)
-                    ),
-                    onPressed: () =>
-                        context.go('/form1/${widget.invitationId}?initialPage=2'),
+                        backgroundColor: Color(0xffffff6d)),
+                    onPressed: () {
+                      context.go('/form1/${widget.invitationId}');
+                    },
                     child: const Text('이전'),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffffff6d)
-                    ),
+                        backgroundColor: const Color(0xffffff6d)),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
@@ -204,19 +207,18 @@ class _Form2PageState extends State<Form2Page> {
 
                         if (userId != null && widget.invitationId != null) {
                           await _updateWeddingDetails(
-                            userId,
-                            widget.invitationId!,
-                            _weddingLocation,
-                            _locationId,
-                            _locationName,
-                            _locationUrl,
-                            _locationPhoneNumber,
-                            _additionalAddress,
-                            _locationX, // 추가된 매개변수
-                            _locationY, // 추가된 매개변수
-                            _kakaoRoadUrl,
-                            _naverRoadUrl
-                          );
+                              userId,
+                              widget.invitationId!,
+                              _weddingLocation,
+                              _locationId,
+                              _locationName,
+                              _locationUrl,
+                              _locationPhoneNumber,
+                              _additionalAddress,
+                              _locationX, // 추가된 매개변수
+                              _locationY, // 추가된 매개변수
+                              _kakaoRoadUrl,
+                              _naverRoadUrl);
                           context.go('/form3/${widget.invitationId}');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -248,22 +250,20 @@ class _Form2PageState extends State<Form2Page> {
       String locationX, // 추가된 매개변수
       String locationY, // 추가된 매개변수
       String kakaoRoadUrl,
-      String naverRoadUrl
-      ) async {
+      String naverRoadUrl) async {
     // Firebase에 데이터 업데이트
     await _firebaseService.updateInvitation(
-      invitationId: invitationId,
-      userId: userId,
-      weddingLocation: location,
-      locationId: locationId,
-      locationName: locationName,
-      locationUrl: locationUrl,
-      locationPhoneNumber: locationPhoneNumber,
-      additionalAddress: additionalAddress,
-      locationX: locationX, // 추가된 매개변수
-      locationY: locationY, // 추가된 매개변수
-      kakaoRoadUrl:kakaoRoadUrl,
-      naverRoadUrl:naverRoadUrl
-    );
+        invitationId: invitationId,
+        userId: userId,
+        weddingLocation: location,
+        locationId: locationId,
+        locationName: locationName,
+        locationUrl: locationUrl,
+        locationPhoneNumber: locationPhoneNumber,
+        additionalAddress: additionalAddress,
+        locationX: locationX, // 추가된 매개변수
+        locationY: locationY, // 추가된 매개변수
+        kakaoRoadUrl: kakaoRoadUrl,
+        naverRoadUrl: naverRoadUrl);
   }
 }
