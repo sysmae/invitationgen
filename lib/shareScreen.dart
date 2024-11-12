@@ -35,6 +35,55 @@ class _ShareScreenState extends State<ShareScreen> {
     }
   }
 
+  void _ShowEditorDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Center(child: Text("초대장 조정")),
+          content: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("수정 혹은 삭제하시겠습니까?"),
+            ],
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: () =>
+                      GoRouter.of(context).go('/form0/${widget.invitationId}'),
+                  child: const Text("수정"),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      String? userId = await FirebaseService().getUserId();
+                      if (userId != null) {
+                        await FirebaseService()
+                            .deleteInvitation(userId, widget.invitationId!);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('초대장이 삭제되었습니다.')),
+                        );
+                        GoRouter.of(context).go('/invitations_list');
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('사용자 ID를 가져올 수 없습니다.')),
+                      );
+                    }
+                  },
+                  child: const Text("삭제"),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +132,8 @@ class _ShareScreenState extends State<ShareScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Container(
+                GestureDetector(
+                  onLongPress: () => _ShowEditorDelete(context),
                   child: (data['templateId'] == '1')
                       ? Image.asset('asset/template1.png')
                       : (data['templateId'] == '2')
@@ -100,6 +150,12 @@ class _ShareScreenState extends State<ShareScreen> {
                                   ),
                                 ),
                 ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('이미지 꾹 눌러서 수정 및 삭제'),
+                  ],
+                ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -107,9 +163,7 @@ class _ShareScreenState extends State<ShareScreen> {
                     _buildCopyLinkButton(context),
                     _buildKakaoShareButton(
                         context, data, weddingDateTimeString),
-                    _buildEditInvitationButton(context),
                     _buildViewInvitationButton(context),
-                    _buildDeleteInvitationButton(context),
                   ],
                 )
               ],
@@ -121,115 +175,108 @@ class _ShareScreenState extends State<ShareScreen> {
   }
 
   Widget _buildCopyLinkButton(BuildContext context) {
-    return IconButton(
-      onPressed: () async {
-        try {
-          final invitationUrl = await _generateInvitationUrl();
-          await Clipboard.setData(ClipboardData(text: invitationUrl));
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('링크가 클립보드에 복사되었습니다.')),
-          );
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$e')),
-          );
-        }
-      },
-      icon: const Icon(Icons.copy),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () async {
+            try {
+              final invitationUrl = await _generateInvitationUrl();
+              await Clipboard.setData(ClipboardData(text: invitationUrl));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('링크가 클립보드에 복사되었습니다.')),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('$e')),
+              );
+            }
+          },
+          child: Image.asset(
+            'asset/copy.png',
+            height: 60,
+            width: 60,
+          ),
+        ),
+        const Text('링크 복사', style: TextStyle(fontSize: 12)),
+      ],
     );
   }
 
   Widget _buildKakaoShareButton(BuildContext context, Map<String, dynamic> data,
       String weddingDateTimeString) {
-    return IconButton(
-      onPressed: () async {
-        bool isKakaoTalkSharingAvailable =
-            await ShareClient.instance.isKakaoTalkSharingAvailable();
-        int templateId = 113904;
-        if (isKakaoTalkSharingAvailable) {
-          try {
-            Uri uri =
-                await ShareClient.instance.shareCustom(templateId: templateId);
-            await ShareClient.instance.launchKakaoTalk(uri);
-          } catch (error) {
-            print('카카오톡 공유 실패: $error');
-          }
-        } else {
-          try {
-            Uri shareUrl = await WebSharerClient.instance.makeCustomUrl(
-              templateId: templateId,
-              templateArgs: {
-                'userId': '${data['userId']}',
-                'invitationId': '${data['invitationId']}',
-                'groomName': '${data['groomName']}',
-                'brideName': '${data['brideName']}',
-                'weddingDateTimeString': weddingDateTimeString,
-              },
-            );
-            await launch(shareUrl.toString());
-          } catch (error) {
-            print('웹 공유 실패: $error');
-          }
-        }
-      },
-      icon: const Icon(Icons.share),
-    );
-  }
-
-  Widget _buildEditInvitationButton(BuildContext context) {
-    return IconButton(
-      onPressed: () => GoRouter.of(context).go('/form0/${widget.invitationId}'),
-      icon: const Icon(Icons.edit),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () async {
+            bool isKakaoTalkSharingAvailable =
+                await ShareClient.instance.isKakaoTalkSharingAvailable();
+            int templateId = 113904;
+            if (isKakaoTalkSharingAvailable) {
+              try {
+                Uri uri = await ShareClient.instance
+                    .shareCustom(templateId: templateId);
+                await ShareClient.instance.launchKakaoTalk(uri);
+              } catch (error) {
+                print('카카오톡 공유 실패: $error');
+              }
+            } else {
+              try {
+                Uri shareUrl = await WebSharerClient.instance.makeCustomUrl(
+                  templateId: templateId,
+                  templateArgs: {
+                    'userId': '${data['userId']}',
+                    'invitationId': '${data['invitationId']}',
+                    'groomName': '${data['groomName']}',
+                    'brideName': '${data['brideName']}',
+                    'weddingDateTimeString': weddingDateTimeString,
+                  },
+                );
+                await launch(shareUrl.toString());
+              } catch (error) {
+                print('웹 공유 실패: $error');
+              }
+            }
+          },
+          child: Image.asset(
+            'asset/kakao.png',
+            height: 60,
+            width: 60,
+          ),
+        ),
+        const Text('카카오톡 공유', style: TextStyle(fontSize: 12)),
+      ],
     );
   }
 
   Widget _buildViewInvitationButton(BuildContext context) {
-    return IconButton(
-      onPressed: () async {
-        try {
-          final invitationUrl = await _generateInvitationUrl();
-          if (await canLaunch(invitationUrl)) {
-            await launch(invitationUrl);
-          } else {
-            throw 'URL을 열 수 없습니다: $invitationUrl';
-          }
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$e')),
-          );
-        }
-      },
-      icon: const Icon(Icons.language),
-    );
-  }
-
-  Widget _buildBackToListButton(BuildContext context) {
-    return IconButton(
-      onPressed: () => GoRouter.of(context).go('/invitations_list'),
-      icon: const Icon(Icons.arrow_back),
-    );
-  }
-
-  Widget _buildDeleteInvitationButton(BuildContext context) {
-    return IconButton(
-      onPressed: () async {
-        try {
-          String? userId = await FirebaseService().getUserId();
-          if (userId != null) {
-            await FirebaseService()
-                .deleteInvitation(userId, widget.invitationId!);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('초대장이 삭제되었습니다.')),
-            );
-            GoRouter.of(context).go('/invitations_list');
-          }
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('사용자 ID를 가져올 수 없습니다.')),
-          );
-        }
-      },
-      icon: const Icon(Icons.delete),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () async {
+            try {
+              final invitationUrl = await _generateInvitationUrl();
+              if (await canLaunch(invitationUrl)) {
+                await launch(invitationUrl);
+              } else {
+                throw 'URL을 열 수 없습니다: $invitationUrl';
+              }
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('$e')),
+              );
+            }
+          },
+          child: Image.asset(
+            'asset/web.png',
+            height: 60,
+            width: 60,
+          ),
+        ),
+        const Text('웹에서 보기', style: TextStyle(fontSize: 12)),
+      ],
     );
   }
 }
