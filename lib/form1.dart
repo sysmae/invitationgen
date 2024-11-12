@@ -135,6 +135,22 @@ class _Form1PageState extends State<Form1Page> {
     });
   }
 
+  String? _validateName(String? value) {
+    return value!.isEmpty ? '이름을 입력하세요.' : null;
+  }
+
+  String? _validatePhone(String? value) {
+    if (value!.isEmpty) return '전화번호를 입력하세요.';
+    final phoneRegExp = RegExp(r'^[0-9]+$');
+    return phoneRegExp.hasMatch(value) ? null : '유효한 전화번호를 입력하세요.';
+  }
+
+  String? _validateAccount(String? value) {
+    if (value!.isEmpty) return '계좌번호를 입력하세요.';
+    final accountRegExp = RegExp(r'^[0-9]+$');
+    return accountRegExp.hasMatch(value) ? null : '유효한 계좌번호를 입력하세요.';
+  }
+
   Future<void> _selectWeddingDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -284,65 +300,58 @@ class _Form1PageState extends State<Form1Page> {
                         TextFormField(
                           controller: _groomNameController,
                           decoration: const InputDecoration(labelText: '신랑 이름'),
-                          validator: (value) =>
-                              value!.isEmpty ? '이름을 입력하세요.' : null,
+                          validator: _validateName,
                         ),
                         TextFormField(
                           controller: _groomPhoneController,
                           decoration:
                               const InputDecoration(labelText: '신랑 전화번호'),
-                          validator: (value) =>
-                              value!.isEmpty ? '전화번호를 입력하세요.' : null,
+                          validator: _validatePhone,
                         ),
                         TextFormField(
                           controller: _groomFatherNameController,
                           decoration:
                               const InputDecoration(labelText: '신랑 아버지 이름'),
-                          validator: (value) =>
-                              value!.isEmpty ? '이름을 입력하세요.' : null,
+                          validator: _validateName,
                         ),
                         TextFormField(
                           controller: _groomFatherPhoneController,
                           decoration:
                               const InputDecoration(labelText: '신랑 아버지 전화번호'),
-                          validator: (value) =>
-                              value!.isEmpty ? '전화번호를 입력하세요.' : null,
+                          validator: _validatePhone,
                         ),
                         TextFormField(
                           controller: _groomMotherNameController,
                           decoration:
                               const InputDecoration(labelText: '신랑 어머니 이름'),
-                          validator: (value) =>
-                              value!.isEmpty ? '이름을 입력하세요.' : null,
+                          validator: _validateName,
                         ),
                         TextFormField(
                           controller: _groomMotherPhoneController,
                           decoration:
                               const InputDecoration(labelText: '신랑 어머니 전화번호'),
-                          validator: (value) =>
-                              value!.isEmpty ? '전화번호를 입력하세요.' : null,
+                          validator: _validatePhone,
                         ),
                         TextFormField(
                           controller: _groomAccountController,
                           decoration:
                               const InputDecoration(labelText: '신랑 계좌번호'),
-                          validator: (value) =>
-                              value!.isEmpty ? '계좌번호를 입력하세요.' : null,
+                          validator: _validateAccount,
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xffffff6d)),
+                                    backgroundColor: const Color(0xffffff6d)),
                                 onPressed: () {
                                   context.go('/form0/${widget.invitationId}');
                                 },
                                 child: const Text('템플릿 설정')),
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xffffff6d)),
+                                    backgroundColor: const Color(0xffffff6d)),
                                 onPressed: () {
                                   _nextPage();
                                 },
@@ -371,69 +380,62 @@ class _Form1PageState extends State<Form1Page> {
                         TextFormField(
                           controller: _brideNameController,
                           decoration: const InputDecoration(labelText: '신부 이름'),
-                          validator: (value) =>
-                              value!.isEmpty ? '이름을 입력하세요.' : null,
+                          validator: _validateName,
                         ),
                         TextFormField(
                           controller: _bridePhoneController,
                           decoration:
                               const InputDecoration(labelText: '신부 전화번호'),
-                          validator: (value) =>
-                              value!.isEmpty ? '전화번호를 입력하세요.' : null,
+                          validator: _validatePhone,
                         ),
                         TextFormField(
                           controller: _brideFatherNameController,
                           decoration:
                               const InputDecoration(labelText: '신부 아버지 이름'),
-                          validator: (value) =>
-                              value!.isEmpty ? '이름을 입력하세요.' : null,
+                          validator: _validateName,
                         ),
                         TextFormField(
                           controller: _brideFatherPhoneController,
                           decoration:
                               const InputDecoration(labelText: '신부 아버지 전화번호'),
-                          validator: (value) =>
-                              value!.isEmpty ? '전화번호를 입력하세요.' : null,
+                          validator: _validatePhone,
                         ),
                         TextFormField(
                           controller: _brideMotherNameController,
                           decoration:
                               const InputDecoration(labelText: '신부 어머니 이름'),
-                          validator: (value) =>
-                              value!.isEmpty ? '이름을 입력하세요.' : null,
+                          validator: _validateName,
                         ),
                         TextFormField(
                           controller: _brideMotherPhoneController,
                           decoration:
                               const InputDecoration(labelText: '신부 어머니 전화번호'),
-                          validator: (value) =>
-                              value!.isEmpty ? '전화번호를 입력하세요.' : null,
+                          validator: _validatePhone,
                         ),
                         TextFormField(
                           controller: _brideAccountController,
                           decoration:
                               const InputDecoration(labelText: '신부 계좌번호'),
-                          validator: (value) =>
-                              value!.isEmpty ? '계좌번호를 입력하세요.' : null,
+                          validator: _validateAccount,
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xffffff6d)),
+                                    backgroundColor: const Color(0xffffff6d)),
                                 onPressed: () {
                                   _prevPage();
                                 },
-                                child: Text('신랑 정보 입력')),
+                                child: const Text('신랑 정보 입력')),
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xffffff6d)),
+                                    backgroundColor: const Color(0xffffff6d)),
                                 onPressed: () {
                                   _nextPage();
                                 },
-                                child: Text('날짜 및 장소 입력')),
+                                child: const Text('날짜 및 장소 입력')),
                           ],
                         )
                       ],
@@ -443,7 +445,7 @@ class _Form1PageState extends State<Form1Page> {
             Form(
               key: _weddingFormKey,
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(children: [
                   const Padding(
                       padding:
@@ -472,18 +474,18 @@ class _Form1PageState extends State<Form1Page> {
                           child: const Text('시간 선택')),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xffffff6d)),
+                              backgroundColor: const Color(0xffffff6d)),
                           onPressed: _prevPage,
                           child: const Text('신부 정보 입력')),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xffffff6d)),
+                              backgroundColor: const Color(0xffffff6d)),
                           onPressed: _saveOrUpdateInvitation,
                           child: const Text('다음 단계로')),
                     ],

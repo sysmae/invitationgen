@@ -90,6 +90,7 @@ class _ShareScreenState extends State<ShareScreen> {
       appBar: AppBar(
         title: Image.asset('asset/temporary_logo.png'),
         backgroundColor: Colors.white,
+        scrolledUnderElevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -115,58 +116,60 @@ class _ShareScreenState extends State<ShareScreen> {
                   .format(weddingDateTime.toDate())
               : '정보 없음';
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    '초대장 정보',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '초대장 정보',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onLongPress: () => _ShowEditorDelete(context),
-                  child: (data['templateId'] == '1')
-                      ? Image.asset('asset/template1.png')
-                      : (data['templateId'] == '2')
-                          ? Image.asset('asset/template2.png')
-                          : (data['templateId'] == '3')
-                              ? Image.asset('asset/template3.png')
-                              : const Center(
-                                  child: Text(
-                                    '잘못된 템플렛 ID 입니다.',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.red,
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onLongPress: () => _ShowEditorDelete(context),
+                    child: (data['templateId'] == '1')
+                        ? Image.asset('asset/template1.png')
+                        : (data['templateId'] == '2')
+                            ? Image.asset('asset/template2.png')
+                            : (data['templateId'] == '3')
+                                ? Image.asset('asset/template3.png')
+                                : const Center(
+                                    child: Text(
+                                      '잘못된 템플렛 ID 입니다.',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.red,
+                                      ),
                                     ),
                                   ),
-                                ),
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('이미지 꾹 눌러서 수정 및 삭제'),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildCopyLinkButton(context),
-                    _buildKakaoShareButton(
-                        context, data, weddingDateTimeString),
-                    _buildViewInvitationButton(context),
-                  ],
-                )
-              ],
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('이미지 꾹 눌러서 수정 및 삭제'),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildCopyLinkButton(context),
+                      _buildKakaoShareButton(
+                          context, data, weddingDateTimeString),
+                      _buildViewInvitationButton(context),
+                    ],
+                  )
+                ],
+              ),
             ),
           );
         },
