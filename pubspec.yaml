@@ -72,6 +72,9 @@ flutter:
     - asset/template1.png
     - asset/template2.png
     - asset/template3.png
+    - asset/kakao.png
+    - asset/copy.png
+    - asset/web.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
