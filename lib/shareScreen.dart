@@ -218,8 +218,16 @@ class _ShareScreenState extends State<ShareScreen> {
             int templateId = 113904;
             if (isKakaoTalkSharingAvailable) {
               try {
-                Uri uri = await ShareClient.instance
-                    .shareCustom(templateId: templateId);
+                Uri uri = await ShareClient.instance.shareCustom(
+                  templateId: templateId,
+                  templateArgs: {
+                    'userId': '${data['userId']}',
+                    'invitationId': '${data['invitationId']}',
+                    'groomName': '${data['groomName']}',
+                    'brideName': '${data['brideName']}',
+                    'weddingDateTimeString': weddingDateTimeString,
+                  },
+                );
                 await ShareClient.instance.launchKakaoTalk(uri);
               } catch (error) {
                 print('카카오톡 공유 실패: $error');
