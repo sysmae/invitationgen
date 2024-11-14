@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:681443339119:android:08d13d9b05474a45f1569a",
         "android_client_info": {
-          "package_name": "com.invitationgen.invitationgen"
+          "package_name": "com.invitationgen"
         }
       },
       "oauth_client": [
@@ -34,7 +34,7 @@
               "client_id": "681443339119-t5941pn6db75knk4e56p2f0mllfc05v0.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.invitationgen.invitationgen"
+                "bundle_id": "com.invitationgen"
               }
             }
           ]
@@ -45,7 +45,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:681443339119:android:5fd939956689b991f1569a",
         "android_client_info": {
-          "package_name": "com.invitationgen.invitationgen"
+          "package_name": "com.invitationgen"
         }
       },
       "oauth_client": [
@@ -70,7 +70,7 @@
               "client_id": "681443339119-t5941pn6db75knk4e56p2f0mllfc05v0.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.invitationgen.invitationgen"
+                "bundle_id": "com.invitationgen"
               }
             }
           ]
