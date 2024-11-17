@@ -62,6 +62,9 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (error) {
       debugPrint("Google sign-in failed: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Google sign-in failed: $error")),
+      );
     }
   }
 
@@ -175,6 +178,9 @@ class _LoginPageState extends State<LoginPage> {
             // 로그인 성공 후 메인 화면으로 이동
             context.go('/');
           } on FirebaseAuthException catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('아이디와 비밀먼호를 확인해주세요')),
+            );
             if (e.code == 'user-not-found') {
               debugPrint('No user found for that email.');
             } else if (e.code == 'wrong-password') {
