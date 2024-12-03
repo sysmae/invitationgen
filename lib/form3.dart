@@ -5,7 +5,7 @@ import 'firebase_service.dart'; // FirebaseService를 import 합니다.
 class Form3Page extends StatefulWidget {
   final String? invitationId;
 
-  const Form3Page({Key? key, this.invitationId}) : super(key: key);
+  const Form3Page({super.key, this.invitationId});
 
   @override
   _Form3PageState createState() => _Form3PageState();
@@ -34,13 +34,11 @@ class _Form3PageState extends State<Form3Page> {
 
   Future<void> _loadExistingData(String invitationId) async {
     final data = await _firebaseService.getInvitationData(invitationId);
-    if (data != null) {
-      setState(() {
-        _additionalInstructions = data['additionalInstructions'] ?? ''; // 기존 데이터 가져오기
-        _additionalInstructionsController.text = _additionalInstructions; // 입력 필드에 기존 데이터 채우기
-      });
+    setState(() {
+      _additionalInstructions = data['additionalInstructions'] ?? ''; // 기존 데이터 가져오기
+      _additionalInstructionsController.text = _additionalInstructions; // 입력 필드에 기존 데이터 채우기
+    });
     }
-  }
 
   // 정보 업데이트 함수
   Future<void> _updateWeddingDetails(String userId) async {
@@ -80,7 +78,7 @@ class _Form3PageState extends State<Form3Page> {
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       '추가 사항 입력',
                       style: TextStyle(
                         fontSize: 20,
@@ -108,7 +106,7 @@ class _Form3PageState extends State<Form3Page> {
                     // Form2로 이동하는 버튼 추가
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffffff6d)
+                        backgroundColor: const Color(0xffffff6d)
                       ),
                       onPressed: () {
                         context.go('/form2/${widget.invitationId}'); // form2로 이동
@@ -118,7 +116,7 @@ class _Form3PageState extends State<Form3Page> {
                     const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xffffff6d)
+                          backgroundColor: const Color(0xffffff6d)
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {

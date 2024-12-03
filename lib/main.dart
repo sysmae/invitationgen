@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GoRouter _router = GoRouter(
+    final GoRouter router = GoRouter(
       initialLocation: '/',
       routes: [
         GoRoute(
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
         ),
         GoRoute(
           path: '/my_profile',
-          builder: (context, state) =>  MyProfilePage(),
+          builder: (context, state) =>  const MyProfilePage(),
         ),
         GoRoute(
           path: '/invitations_list',
@@ -95,7 +95,7 @@ class MyApp extends StatelessWidget {
     );
 
     return MaterialApp.router(
-      routerConfig: _router,
+      routerConfig: router,
       title: '초대장 생성 앱',
       theme: ThemeData(
         primarySwatch: Colors.blue,

@@ -5,7 +5,7 @@ import 'firebase_service.dart';
 class Form0Page extends StatefulWidget {
   final String? invitationId;
 
-  const Form0Page({Key? key, this.invitationId}) : super(key: key);
+  const Form0Page({super.key, this.invitationId});
 
   @override
   _Form0PageState createState() => _Form0PageState();
@@ -181,9 +181,9 @@ class _Form0PageState extends State<Form0Page> {
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 8), // Space between image and text
+              const SizedBox(height: 8), // Space between image and text
               Text(title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,

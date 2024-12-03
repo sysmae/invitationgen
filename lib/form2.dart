@@ -6,7 +6,7 @@ import 'dart:convert'; // JSON 파싱을 위한 라이브러리
 
 class Form2Page extends StatefulWidget {
   final String? invitationId;
-  const Form2Page({Key? key, this.invitationId}) : super(key: key);
+  const Form2Page({super.key, this.invitationId});
 
   @override
   _Form2PageState createState() => _Form2PageState();
@@ -124,7 +124,7 @@ class _Form2PageState extends State<Form2Page> {
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     '결혼 장소 설정',
                     style: TextStyle(
                         fontSize: 20,
@@ -191,7 +191,7 @@ class _Form2PageState extends State<Form2Page> {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffffff6d)),
+                        backgroundColor: const Color(0xffffff6d)),
                     onPressed: () {
                       context.go('/form1/${widget.invitationId}');
                     },

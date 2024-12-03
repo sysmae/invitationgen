@@ -48,14 +48,14 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
-      final GoogleSignIn _googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? _account = await _googleSignIn.signIn();
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? account = await googleSignIn.signIn();
 
-      if (_account != null) {
-        final GoogleSignInAuthentication _auth = await _account.authentication;
+      if (account != null) {
+        final GoogleSignInAuthentication auth = await account.authentication;
         final credential = GoogleAuthProvider.credential(
-          accessToken: _auth.accessToken,
-          idToken: _auth.idToken,
+          accessToken: auth.accessToken,
+          idToken: auth.idToken,
         );
 
         final UserCredential userCredential =
@@ -104,26 +104,6 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 15),
                     passwordInput(),
                     const SizedBox(height: 5),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          if (_emailController.text.isEmpty) {
-                            _showSnackBar('이메일을 입력해주세요.', isError: true);
-                            return;
-                          }
-                          FirebaseAuth.instance.sendPasswordResetEmail(
-                            email: _emailController.text,
-                          ).then((_) {
-                            _showSnackBar('비밀번호 재설정 이메일이 발송되었습니다.');
-                          }).catchError((error) {
-                            _showSnackBar('이메일 발송 실패: 이메일을 확인해주세요.', isError: true);
-                          });
-                        },
-                        child: const Text("비밀번호 찾기"),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
                     if (_isLoading)
                       const CircularProgressIndicator()
                     else

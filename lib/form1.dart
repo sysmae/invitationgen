@@ -9,8 +9,7 @@ class Form1Page extends StatefulWidget {
   final String? invitationId;
   final int initialPage;
 
-  const Form1Page({Key? key, this.invitationId, this.initialPage = 0})
-      : super(key: key);
+  const Form1Page({super.key, this.invitationId, this.initialPage = 0});
 
   @override
   _Form1PageState createState() => _Form1PageState();
@@ -81,40 +80,36 @@ class _Form1PageState extends State<Form1Page> {
   Future<void> _loadInvitationData() async {
     var invitationData =
         await _firebaseService.getInvitationData(widget.invitationId!);
-    if (invitationData != null) {
-      setState(() {
-        _groomNameController.text = invitationData['groomName'] ?? '';
-        _groomPhoneController.text = invitationData['groomPhone'] ?? '';
-        _groomFatherNameController.text =
-            invitationData['groomFatherName'] ?? '';
-        _groomFatherPhoneController.text =
-            invitationData['groomFatherPhone'] ?? '';
-        _groomMotherNameController.text =
-            invitationData['groomMotherName'] ?? '';
-        _groomMotherPhoneController.text =
-            invitationData['groomMotherPhone'] ?? '';
-        _brideNameController.text = invitationData['brideName'] ?? '';
-        _bridePhoneController.text = invitationData['bridePhone'] ?? '';
-        _brideFatherNameController.text =
-            invitationData['brideFatherName'] ?? '';
-        _brideFatherPhoneController.text =
-            invitationData['brideFatherPhone'] ?? '';
-        _brideMotherNameController.text =
-            invitationData['brideMotherName'] ?? '';
-        _brideMotherPhoneController.text =
-            invitationData['brideMotherPhone'] ?? '';
-        _groomAccountController.text =
-            invitationData['groomAccountNumber'] ?? '';
-        _brideAccountController.text =
-            invitationData['brideAccountNumber'] ?? '';
-        _weddingDate =
-            (invitationData['weddingDateTime'] as Timestamp).toDate();
-        _weddingTime = TimeOfDay.fromDateTime(_weddingDate);
-      });
-    } else {
-      _setDefaultData(); // 데이터가 없을 때 기본 데이터 설정
+    setState(() {
+      _groomNameController.text = invitationData['groomName'] ?? '';
+      _groomPhoneController.text = invitationData['groomPhone'] ?? '';
+      _groomFatherNameController.text =
+          invitationData['groomFatherName'] ?? '';
+      _groomFatherPhoneController.text =
+          invitationData['groomFatherPhone'] ?? '';
+      _groomMotherNameController.text =
+          invitationData['groomMotherName'] ?? '';
+      _groomMotherPhoneController.text =
+          invitationData['groomMotherPhone'] ?? '';
+      _brideNameController.text = invitationData['brideName'] ?? '';
+      _bridePhoneController.text = invitationData['bridePhone'] ?? '';
+      _brideFatherNameController.text =
+          invitationData['brideFatherName'] ?? '';
+      _brideFatherPhoneController.text =
+          invitationData['brideFatherPhone'] ?? '';
+      _brideMotherNameController.text =
+          invitationData['brideMotherName'] ?? '';
+      _brideMotherPhoneController.text =
+          invitationData['brideMotherPhone'] ?? '';
+      _groomAccountController.text =
+          invitationData['groomAccountNumber'] ?? '';
+      _brideAccountController.text =
+          invitationData['brideAccountNumber'] ?? '';
+      _weddingDate =
+          (invitationData['weddingDateTime'] as Timestamp).toDate();
+      _weddingTime = TimeOfDay.fromDateTime(_weddingDate);
+    });
     }
-  }
 
   void _setDefaultData() {
     setState(() {
@@ -158,10 +153,11 @@ class _Form1PageState extends State<Form1Page> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _weddingDate)
+    if (picked != null && picked != _weddingDate) {
       setState(() {
         _weddingDate = picked;
       });
+    }
   }
 
   Future<void> _selectWeddingTime() async {
@@ -169,10 +165,11 @@ class _Form1PageState extends State<Form1Page> {
       context: context,
       initialTime: _weddingTime,
     );
-    if (picked != null && picked != _weddingTime)
+    if (picked != null && picked != _weddingTime) {
       setState(() {
         _weddingTime = picked;
       });
+    }
   }
 
   Future<void> _saveOrUpdateInvitation() async {

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'firebase_service.dart';
 
 class InvitationsListPage extends StatefulWidget {
-  const InvitationsListPage({Key? key}) : super(key: key);
+  const InvitationsListPage({super.key});
 
   @override
   _InvitationsListPageState createState() => _InvitationsListPageState();

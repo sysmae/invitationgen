@@ -10,7 +10,7 @@ import 'package:intl/date_symbol_data_local.dart';
 class ShareScreen extends StatefulWidget {
   final String? invitationId;
 
-  ShareScreen({Key? key, this.invitationId}) : super(key: key);
+  const ShareScreen({super.key, this.invitationId});
 
   static const String baseUrl =
       'https://invitationgen-7eb56.firebaseapp.com/invitation';
